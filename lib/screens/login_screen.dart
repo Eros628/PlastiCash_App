@@ -76,7 +76,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         Column(
                           children: [
                             Center(child: TextButton(onPressed: (){}, style: ButtonStyle(fixedSize: WidgetStatePropertyAll(Size(147, 26)), backgroundColor: WidgetStatePropertyAll(Colors.white)),  child: Text("LOGIN", style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 27, 75, 61))))),
-                            Row(mainAxisAlignment:MainAxisAlignment.center,children: [Text("Don’t have an accont yet?", style: TextStyle(fontWeight: FontWeight.normal)), TextButton(onPressed:(){}, child: Text("Register Now!",style: TextStyle(fontWeight: FontWeight.normal,color: Colors.green,decoration: TextDecoration.underline, decorationColor: Colors.green)))
+                            Row(mainAxisAlignment:MainAxisAlignment.center,children: [Text("Don’t have an accont yet?", style: TextStyle(fontWeight: FontWeight.normal)),
+                              TextButton(
+                                  onPressed:(){
+                                    Navigator.pushNamed(context, '/signup');
+                                  },
+                                  child: Text("Register Now!",style: TextStyle(fontWeight: FontWeight.normal,color: Colors.green,decoration: TextDecoration.underline, decorationColor: Colors.green)))
                             ])
                           ],
                         ),
@@ -88,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.topLeft,
               child: IconButton(icon: Icon(Icons.arrow_back_rounded), color: Color.fromARGB(255, 255, 255, 255), iconSize: 50, padding: EdgeInsets.fromLTRB(20, 40,0,0),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pushNamedAndRemoveUntil(context, '/startup', (_) => false);
                 },
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/screens/signup_screen.dart';
 import '/screens/login_screen.dart';
 
 
@@ -48,30 +49,20 @@ class StartupScreen extends StatelessWidget {
                     Column(children: [TextButton(
                         style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 58, 192, 154)), textStyle: WidgetStatePropertyAll(TextStyle(color: Color.fromARGB(255, 3, 0,71))), fixedSize: WidgetStatePropertyAll(Size(320, 50)))
                         ,onPressed: (){
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 800),
-                          reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
-                          pageBuilder: (context, animation, secondaryAnimation) => LoginScreen(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            final curvedAnimation = CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.linear,
-                            );
-
-                            return FadeTransition(
-                              opacity: curvedAnimation,
-                              child: child,
-                            );
-                          },
-                        ),
+                      Navigator.pushNamed(
+                        context, '/login'
                       );
-                    }, child: Text("SIGN IN", style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 3, 0, 71)),)),
+                    }, child: Text("LOGIN", style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 3, 0, 71)),)),
                       SizedBox(height: 20),
                       Text("----------------OR----------------", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.grey.shade100)),
                       SizedBox(height: 20),
-                      OutlinedButton(style: ButtonStyle(fixedSize: WidgetStatePropertyAll(Size(320, 50)), side: WidgetStatePropertyAll(BorderSide(color: Colors.white))),onPressed: (){}, child: Text("SIGN UP", style: TextStyle(fontSize: 20, color: Colors.white)))]),
+                      OutlinedButton(style: ButtonStyle(fixedSize: WidgetStatePropertyAll(Size(320, 50)), side: WidgetStatePropertyAll(BorderSide(color: Colors.white))),
+                          onPressed: (){
+                            Navigator.pushNamed(
+                              context,'/signup'
+                            );
+                          },
+                          child: Text("SIGN UP", style: TextStyle(fontSize: 20, color: Colors.white)))]),
                   ])
               )
           ),
