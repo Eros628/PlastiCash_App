@@ -1,39 +1,110 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  final ScrollController _scrollController = ScrollController();
+  bool _isBottomNavVisible = false;
+  Timer? _scrollingTimer;
+
+  @override 
+  void initState(){
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener(){
+    if(_scrollController.position.isScrollingNotifier.value && !_isBottomNavVisible) {
+        setState(() {
+          _isBottomNavVisible = true;
+        });
+    }
+    if (_scrollingTimer != null) {
+        _scrollingTimer!.cancel();
+    }
+
+    _scrollingTimer = Timer(const Duration(seconds: 5), () {
+        setState(() {
+          _isBottomNavVisible = false;  // Hide bottom nav after 2 seconds of inactivity
+        });
+      });
+  }
+  
+  @override
+  void dispose(){
+    _scrollController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // First container with Div1 and Div2
-          Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 211, 241, 223),
-              borderRadius: BorderRadius.horizontal(left: Radius.circular(65), right: Radius.zero),
-            ),
-            height: 367,
-            child: Column(children: [Div1(), Div2()]),
-          ),
-          Container(height: 50, color: Color.fromARGB(255, 211, 241, 223)),
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
           
-          // Div3 with translation applied
-          Expanded(
-            child: Transform.translate(
-              offset: Offset(0, -50), // Move up by 50 pixels
-              child: SingleChildScrollView(child: Div3()),
+          children: [
+            // First container with Div1 and Div2
+            Container(
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 211, 241, 223),
+                borderRadius: BorderRadius.horizontal(left: Radius.circular(65), right: Radius.zero),
+              ),
+              height: 367,
+              child: Column(children: [Div1(), Div2()]),
             ),
-          ),
-        ],
+            Container(height: 50, color: Color.fromARGB(255, 211, 241, 223)),
+            
+            // Div3 with translation applied
+            Expanded(
+              child: Transform.translate(
+                offset: Offset(0, -50), // Move up by 50 pixels
+                child: SingleChildScrollView(controller: _scrollController,child: Div3()),
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        height: _isBottomNavVisible ? kBottomNavigationBarHeight:0,
+        child: Wrap(
+            children:[ Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: BottomNavigationBar(
+              elevation: 0,
+              iconSize: 30,
+              backgroundColor: Colors.white,
+              type: BottomNavigationBarType.fixed,
+              showUnselectedLabels:true,
+              showSelectedLabels: true,
+              selectedItemColor: Colors.green,
+              items: [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(Icons.pin_drop_outlined), label: 'Location'),
+              BottomNavigationBarItem(icon: Image.asset('assets/logoIcon.png'), label: 'About Us'),
+              BottomNavigationBarItem(icon: Icon(Icons.stacked_bar_chart_outlined), label: 'Milestone'),
+              BottomNavigationBarItem(icon: Icon(Icons.person_2_rounded), label: 'Profile')
+              
+                        ]),
+            ),
+            ],
+
+        ),
       ),
     );
   }
 }
-
 
 class Div1 extends StatefulWidget
 {
@@ -128,7 +199,7 @@ class _Div3State extends State<Div3> {
       decoration: BoxDecoration( color: Colors.white,borderRadius: BorderRadius.only(topRight: Radius.circular(65))),
       child: Column(
         children: [
-          Div3MapSection(), MilestoneSection()
+          Div3MapSection(),SizedBox(height: 10,), MilestoneSection(),SizedBox(height: 10,), Div3AboutUs()
         ],
       ),
     );
@@ -219,4 +290,40 @@ class _MilestoneSectionState extends State<MilestoneSection> {
         ),
     ]);
   } 
+}
+
+class Div3AboutUs extends StatelessWidget {
+  const Div3AboutUs({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "About Us",
+                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+              ),
+              SizedBox(width: 185), // Adjust space between widgets
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  "More",
+                  style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+        Container(
+          height: 192,
+          width: 352,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+          ),
+        ),
+    ]);
+  }
 }
