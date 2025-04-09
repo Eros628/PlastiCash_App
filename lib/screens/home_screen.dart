@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_finalprojects/screens/aboutus_screen.dart';
+import 'package:flutter_finalprojects/screens/map_screen.dart';
+import 'package:flutter_finalprojects/screens/milestone_screen.dart';
+import 'package:flutter_finalprojects/screens/profile_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+
+final bugoMarker = Marker(
+  point: LatLng(8.5003, 124.7824), // Bugo, CDO
+  child: Image.asset('assets/logoIcon.png') );
 
 
 class HomePage extends StatefulWidget {
@@ -12,50 +19,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
 
-  final ScrollController _scrollController = ScrollController();
-  bool _isBottomNavVisible = false;
-  Timer? _scrollingTimer;
-
-  @override 
-  void initState(){
-    super.initState();
-    _scrollController.addListener(_scrollListener);
-  }
-
-  void _scrollListener(){
-    if(_scrollController.position.isScrollingNotifier.value && !_isBottomNavVisible) {
-        setState(() {
-          _isBottomNavVisible = true;
-        });
-    }
-    if (_scrollingTimer != null) {
-        _scrollingTimer!.cancel();
-    }
-
-    _scrollingTimer = Timer(const Duration(seconds: 5), () {
-        setState(() {
-          _isBottomNavVisible = false;  // Hide bottom nav after 2 seconds of inactivity
-        });
-      });
-  }
-  
-  @override
-  void dispose(){
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Colors.white,
-      body: SizedBox(
+  Widget _buildHomeContent() {
+    return SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Column(
-          
           children: [
             // First container with Div1 and Div2
             Container(
@@ -72,42 +41,76 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Transform.translate(
                 offset: Offset(0, -50), // Move up by 50 pixels
-                child: SingleChildScrollView(controller: _scrollController,child: Div3()),
+                child: SingleChildScrollView(child: Div3(onNavigate: (int newIndex) {
+                  setState(() {
+                    _currentIndex = newIndex;
+                  });
+                })),
               ),
             ),
           ],
         ),
-      ),
+      );
+  }
+
+   List<Widget> get _screens => [
+    _buildHomeContent(),
+    MapScreen(),
+    AboutusScreen(),
+    MilestoneScreen(),
+    ProfileScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBody: true,
+      backgroundColor: Colors.white,
+      body: _screens[_currentIndex],
       bottomNavigationBar: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        height: _isBottomNavVisible ? kBottomNavigationBarHeight:0,
-        child: Wrap(
-            children:[ Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: BottomNavigationBar(
-              elevation: 0,
-              iconSize: 30,
-              backgroundColor: Colors.white,
-              type: BottomNavigationBarType.fixed,
-              showUnselectedLabels:true,
-              showSelectedLabels: true,
-              selectedItemColor: Colors.green,
-              items: [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.pin_drop_outlined), label: 'Location'),
-              BottomNavigationBarItem(icon: Image.asset('assets/logoIcon.png'), label: 'About Us'),
-              BottomNavigationBarItem(icon: Icon(Icons.stacked_bar_chart_outlined), label: 'Milestone'),
-              BottomNavigationBarItem(icon: Icon(Icons.person_2_rounded), label: 'Profile')
-              
-                        ]),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (value) {
+            setState(() {
+              _currentIndex = value;
+            });
+          },
+          backgroundColor: Colors.white,
+          type: BottomNavigationBarType.fixed,
+          showUnselectedLabels: true,
+          showSelectedLabels: true,
+          selectedItemColor: Colors.green,
+          elevation: 0,
+          items:  [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-            ],
-
+            BottomNavigationBarItem(
+              icon: Icon(Icons.pin_drop_outlined),
+              label: 'Location',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('assets/logoIcon.png'),
+              label: 'About Us',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.stacked_bar_chart_outlined),
+              label: 'Milestone',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_2_rounded),
+              label: 'Profile',
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+
 
 class Div1 extends StatefulWidget
 {
@@ -189,7 +192,8 @@ class _Div2State extends State<Div2> {
 
 
 class Div3 extends StatefulWidget {
-  const Div3({super.key});
+  final ValueChanged<int> onNavigate;
+  const Div3({super.key, required this.onNavigate});
 
   @override
   State<Div3> createState() => _Div3State();
@@ -202,7 +206,7 @@ class _Div3State extends State<Div3> {
       decoration: BoxDecoration( color: Colors.white,borderRadius: BorderRadius.only(topRight: Radius.circular(65))),
       child: Column(
         children: [
-          Div3MapSection(),SizedBox(height: 10,), MilestoneSection(),SizedBox(height: 10,), Div3AboutUs()
+          Div3MapSection(onNavigate: widget.onNavigate),SizedBox(height: 10,), MilestoneSection(onNavigate: widget.onNavigate,),SizedBox(height: 10,), Div3AboutUs()
         ],
       ),
     );
@@ -211,20 +215,17 @@ class _Div3State extends State<Div3> {
 
 
 class Div3MapSection extends StatefulWidget {
-  const Div3MapSection({super.key});
+  final ValueChanged<int> onNavigate;  // Callback for navigation
+
+  const Div3MapSection({super.key, required this.onNavigate});
 
   @override
   State<Div3MapSection> createState() => _Div3MapSectionState();
 }
 
+
 class _Div3MapSectionState extends State<Div3MapSection> {
   final MapController _mapController = MapController();
-
-  
-  final bugoMarker = Marker(
-    point: LatLng(8.5003, 124.7824), // Bugo, CDO
-    child: Image.asset('assets/logoIcon.png')
-  );
 
  
   @override
@@ -241,7 +242,9 @@ class _Div3MapSectionState extends State<Div3MapSection> {
             ),
             SizedBox(width: 100), // Adjust this to control space between widgets
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                widget.onNavigate(1);
+              },
               child: Text(
                 "Expand",
                 style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
@@ -253,21 +256,30 @@ class _Div3MapSectionState extends State<Div3MapSection> {
           height: 192,
           width: 352,
           child: ClipRRect(
-            
             borderRadius: BorderRadius.all(Radius.circular(25)),
-            child: FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                initialCenter: const LatLng( 8.5003, 124.7824),
-                initialZoom: 12,
-                minZoom: 8, // Optional: Set a min zoom level
-                maxZoom: 18,
-
-              ) 
-              ,children: [
-                TileLayer(urlTemplate:'https://tile.openstreetmap.org/{z}/{x}/{y}.png' ,)
-                ,MarkerLayer(markers: [bugoMarker])
-              ]
+              child: Hero(
+                tag: "map",
+                child: FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: const LatLng( 8.5003, 124.7824),
+                    initialZoom: 12,
+                    minZoom: 8, // Optional: Set a min zoom level
+                    maxZoom: 18,
+                
+                  ) 
+                  ,children: [
+                    OutlinedButton(
+                      style: ButtonStyle(shape:WidgetStatePropertyAll(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25))
+                      ))),
+                      onPressed: () {
+                        widget.onNavigate(1);
+                      },
+                      child: TileLayer(urlTemplate:'https://tile.openstreetmap.org/{z}/{x}/{y}.png' ,))
+                    ,MarkerLayer(markers: [bugoMarker])
+                  ]
+                  ),
               ),
           ),
         ),
@@ -278,7 +290,8 @@ class _Div3MapSectionState extends State<Div3MapSection> {
 }
 
 class MilestoneSection extends StatefulWidget {
-  const MilestoneSection({super.key});
+  final ValueChanged<int> onNavigate;
+  const MilestoneSection({super.key, required this.onNavigate});
 
   @override
   State<MilestoneSection> createState() => _MilestoneSectionState();
@@ -301,7 +314,9 @@ class _MilestoneSectionState extends State<MilestoneSection> {
               ),
               SizedBox(width: 185), // Adjust space between widgets
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  widget.onNavigate(1);
+                },
                 child: Text(
                   "See All",
                   style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
@@ -421,6 +436,7 @@ class Div3AboutUs extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(25)),
           ),
         ),
+        SizedBox(height: 60,)
     ]);
   }
 }
