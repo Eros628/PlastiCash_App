@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -215,6 +218,15 @@ class Div3MapSection extends StatefulWidget {
 }
 
 class _Div3MapSectionState extends State<Div3MapSection> {
+  final MapController _mapController = MapController();
+
+  
+  final bugoMarker = Marker(
+    point: LatLng(8.5003, 124.7824), // Bugo, CDO
+    child: Image.asset('assets/logoIcon.png')
+  );
+
+ 
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -237,12 +249,25 @@ class _Div3MapSectionState extends State<Div3MapSection> {
             ),
           ],
         ),
-        Container(
+        SizedBox(
           height: 192,
           width: 352,
-          decoration: BoxDecoration(
-            color: Colors.grey,
+          child: ClipRRect(
+            
             borderRadius: BorderRadius.all(Radius.circular(25)),
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: const LatLng( 8.5003, 124.7824),
+                initialZoom: 12,
+                
+              ) 
+            
+              ,children: [
+                TileLayer(urlTemplate:'https://tile.openstreetmap.org/{z}/{x}/{y}.png' ,)
+                ,MarkerLayer(markers: [bugoMarker])
+              ]
+              ),
           ),
         ),
         SizedBox(height: 10,),
