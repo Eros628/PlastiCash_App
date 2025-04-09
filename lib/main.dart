@@ -13,10 +13,15 @@ class PlastiCashApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        
         theme: ThemeData(textTheme: TextTheme(bodyMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "Poppins"))),
         debugShowCheckedModeBanner: false,
         title: "PlastiCash",
-        initialRoute: '/startup',
+        routes: {
+          '/home': (context) => HomePage()
+        },
+        initialRoute: '/home',
+
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case '/startup':

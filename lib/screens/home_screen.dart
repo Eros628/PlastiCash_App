@@ -1,25 +1,49 @@
 import 'package:flutter/material.dart';
 
 
-class HomePage extends StatelessWidget{
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            height: 365.0,
-            decoration:BoxDecoration(color: const Color.fromARGB(255,211, 241, 223), borderRadius:BorderRadius.horizontal(left: Radius.circular(65), right: Radius.zero))
-            ,child: Column(
-            children: [Div1(), Div2()])
-        )
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          // First container with Div1 and Div2
+          Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 211, 241, 223),
+              borderRadius: BorderRadius.horizontal(left: Radius.circular(65), right: Radius.zero),
+            ),
+            height: 367,
+            child: Column(children: [Div1(), Div2()]),
+          ),
+          Container(height: 50, color: Color.fromARGB(255, 211, 241, 223)),
+          
+          // Div3 with translation applied
+          Expanded(
+            child: Transform.translate(
+              offset: Offset(0, -50), // Move up by 50 pixels
+              child: SingleChildScrollView(child: Div3()),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class Div1 extends StatelessWidget
+
+class Div1 extends StatefulWidget
 {
   const Div1({super.key});
+
+  @override
+  State<Div1> createState() => _Div1State();
+}
+
+class _Div1State extends State<Div1> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,13 +66,18 @@ class Div1 extends StatelessWidget
   }
 }
 
-class Div2 extends StatelessWidget
+class Div2 extends StatefulWidget
 {
   const Div2({super.key});
 
   @override
+  State<Div2> createState() => _Div2State();
+}
+
+class _Div2State extends State<Div2> {
+  @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return Container(
       height: 180,
       width: 370,
@@ -74,10 +103,120 @@ class Div2 extends StatelessWidget
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 8,
                           children: [Text("This Month",style: TextStyle(fontWeight: FontWeight.normal)), Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("26 Bottles",style: TextStyle(fontSize: 18))])])
+                      
+                    
                     ]),
               )
             ]),
       ),
     );
   }
+}
+
+
+class Div3 extends StatefulWidget {
+  const Div3({super.key});
+
+  @override
+  State<Div3> createState() => _Div3State();
+}
+
+class _Div3State extends State<Div3> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration( color: Colors.white,borderRadius: BorderRadius.only(topRight: Radius.circular(65))),
+      child: Column(
+        children: [
+          Div3MapSection(), MilestoneSection()
+        ],
+      ),
+    );
+  }
+}
+
+
+class Div3MapSection extends StatefulWidget {
+  const Div3MapSection({super.key});
+
+  @override
+  State<Div3MapSection> createState() => _Div3MapSectionState();
+}
+
+class _Div3MapSectionState extends State<Div3MapSection> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(height: 10,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Suggested Location",
+              style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+            ),
+            SizedBox(width: 100), // Adjust this to control space between widgets
+            TextButton(
+              onPressed: () {},
+              child: Text(
+                "Expand",
+                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+        Container(
+          height: 192,
+          width: 352,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+          ),
+        ),
+        SizedBox(height: 10,),
+      ]
+    );
+  }
+}
+
+class MilestoneSection extends StatefulWidget {
+  const MilestoneSection({super.key});
+
+  @override
+  State<MilestoneSection> createState() => _MilestoneSectionState();
+}
+
+class _MilestoneSectionState extends State<MilestoneSection> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Milestones",
+                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+              ),
+              SizedBox(width: 185), // Adjust space between widgets
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  "See All",
+                  style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+                ),
+              ),
+            ],
+          ),
+        Container(
+          height: 192,
+          width: 352,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+          ),
+        ),
+    ]);
+  } 
 }
