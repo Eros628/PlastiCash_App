@@ -3,6 +3,8 @@ import 'screens/login_screen.dart';
 import 'screens/startup_screen.dart';
 import 'screens//home_screen.dart';
 import 'screens/signup_screen.dart';
+import 'package:flutter/rendering.dart';
+
 
 void main() {
   runApp(PlastiCashApp());

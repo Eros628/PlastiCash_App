@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
+import 'package:flutter/rendering.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -260,9 +260,10 @@ class _Div3MapSectionState extends State<Div3MapSection> {
               options: MapOptions(
                 initialCenter: const LatLng( 8.5003, 124.7824),
                 initialZoom: 12,
-                
+                minZoom: 8, // Optional: Set a min zoom level
+                maxZoom: 18,
+
               ) 
-            
               ,children: [
                 TileLayer(urlTemplate:'https://tile.openstreetmap.org/{z}/{x}/{y}.png' ,)
                 ,MarkerLayer(markers: [bugoMarker])
@@ -284,6 +285,9 @@ class MilestoneSection extends StatefulWidget {
 }
 
 class _MilestoneSectionState extends State<MilestoneSection> {
+  int  currentValue = 20;
+  int  maxValue = 100;
+  double get progress => currentValue / maxValue;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -306,11 +310,79 @@ class _MilestoneSectionState extends State<MilestoneSection> {
             ],
           ),
         Container(
-          height: 192,
+          padding: EdgeInsets.only(top: 10),
+          height: 270,
           width: 352,
           decoration: BoxDecoration(
-            color: Colors.grey,
             borderRadius: BorderRadius.all(Radius.circular(25)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(25),
+                decoration: BoxDecoration(color: Colors.white,
+                  border: Border(left: BorderSide(color: Colors.blue.shade200, width:10)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                      spreadRadius: 2,   // Extent of the shadow
+                      blurRadius: 10,    // Softness of the shadow
+                      offset: Offset(0, 6),
+                       // Horizontal and vertical offset
+                    ),
+                  ],
+                  
+                  ),
+                
+                child: Column(
+                  children: [
+                    Text("Recycle 5 kg of plastic (P20 bonus).", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 15)),
+                    SizedBox(height: 20,),
+                    SizedBox(
+                      child: LinearProgressIndicator(
+                        value: progress +0.1,
+                        backgroundColor: Colors.grey,
+                        color: Colors.green,
+                        minHeight: 5,
+                      ),
+                    )
+                  
+                  ],
+                ),
+              ),
+              SizedBox(height: 30,),
+              Container(
+                padding: EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(left: BorderSide(color: Colors.green.shade900, width:10 )),
+                   boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                      spreadRadius: 2,   // Extent of the shadow
+                      blurRadius: 10,    // Softness of the shadow
+                      offset: Offset(0, 6),
+                       // Horizontal and vertical offset
+                    ),
+                  ],
+                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Recycle 50 kg of plastic\n(P100 bonus)", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 15)),
+                    SizedBox(height: 20,),
+                    SizedBox(
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: Colors.grey,
+                        color: Colors.green,
+                        minHeight: 5,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
           ),
         ),
     ]);
