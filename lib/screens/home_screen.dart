@@ -345,10 +345,8 @@ class _MilestoneSectionState extends State<MilestoneSection> {
                       offset: Offset(0, 6),
                        // Horizontal and vertical offset
                     ),
-                  ],
-                  
-                  ),
-                
+                  ]
+                ),
                 child: Column(
                   children: [
                     Text("Recycle 5 kg of plastic (P20 bonus).", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 15)),
