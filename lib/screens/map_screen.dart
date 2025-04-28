@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_finalprojects/screens/aboutus_screen.dart';
 import 'package:flutter_finalprojects/screens/map_screen.dart';
 import 'package:flutter_finalprojects/screens/milestone_screen.dart';
@@ -8,9 +7,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'home_screen.dart';
 import 'package:geolocator/geolocator.dart';
+
+
+
+
+
+
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
-
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
@@ -18,7 +22,6 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController2 = MapController();
   LatLng? userLocation;
- 
 
   Future<void> _handleLocationPermission() async {
     LocationPermission permission;
@@ -51,7 +54,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
 
-  
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +96,7 @@ class _MapScreenState extends State<MapScreen> {
       ]),
 
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 130, right: 10),
+        padding: const EdgeInsets.only(bottom: 100, right: 10),
         child: FloatingActionButton(
           elevation: 0,
           onPressed: ()async{
@@ -107,8 +110,9 @@ class _MapScreenState extends State<MapScreen> {
               _mapController2.move(userLocation!,9);
             }
           },
-          backgroundColor: Colors.green,
-          child: Icon(Icons.my_location, color: Colors.white,size: 30,)
+          backgroundColor:  Color.fromARGB(255, 27, 75, 61),
+          focusColor: Colors.red,
+          child: Icon(Icons.my_location_outlined, color: const Color.fromARGB(255, 255, 255, 255),size: 30,)
           ),
       ),
     );

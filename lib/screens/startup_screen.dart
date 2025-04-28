@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_finalprojects/screens/signup_screen.dart';
 import '/screens/login_screen.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StartupScreen extends StatelessWidget {
   const StartupScreen({super.key});
@@ -14,14 +14,14 @@ class StartupScreen extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.topRight,
-            child: Container(height: 140,width: 160,decoration: BoxDecoration(color: Color.fromARGB(255, 27, 75, 61), borderRadius:BorderRadius.only(bottomLeft: Radius.circular(200)) ),),
+            child: Container(height: 240.h,width: 260.w,decoration: BoxDecoration(color: Color.fromARGB(255, 27, 75, 61), borderRadius:BorderRadius.only(bottomLeft: Radius.circular(200)) ),),
           )  ,
           // Curved green background at the bottom
           Align(
               alignment: Alignment.bottomCenter,
               child: Stack(children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(40, 10, 50,0),
+                  padding: EdgeInsets.fromLTRB(40.w, 10, 50.w,0),
                   child: Hero(tag:"bottomup1",child: Row(crossAxisAlignment: CrossAxisAlignment.end,mainAxisAlignment: MainAxisAlignment.spaceBetween,children:[Image(image:AssetImage('assets/leaf2.png')), Image(image:AssetImage('assets/leaf1.png'))])),
                 ),
                 Hero(
@@ -30,7 +30,7 @@ class StartupScreen extends StatelessWidget {
                     clipper: BottomCurveClipper(),
                     child: Container(
                       color: Color.fromARGB(255, 27, 75, 61), // Your green color
-                      height: 400,
+                      height: 850.h,
                     ),
                   ),
                 )
@@ -40,29 +40,29 @@ class StartupScreen extends StatelessWidget {
           // Content
           SingleChildScrollView(
               child: Padding(
-                  padding:EdgeInsets.fromLTRB(50,120,50,0),
+                  padding:EdgeInsets.fromLTRB(50,122.h,50,0.h),
                   child: Column( mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                    Column(children: [Container(padding: EdgeInsets.fromLTRB(0, 0,0,10) ,
+                    Column(children: [Container(padding: EdgeInsets.fromLTRB(0.w, 0.h,0.w,10.h) ,
                       child: Hero(tag:"logo",child: Image(image: AssetImage('assets/logo.png'),)),
-                    ),Text("BOTTLE IT UP, CASH IT OUT", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24, color: Colors.black)), Text("You don't need therapy you need money :D", style: TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.normal))]),
-                    SizedBox(height: 150,),
+                    ),Text("BOTTLE IT UP, CASH IT OUT", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 50.sp, color: Colors.black)), Text("You don't need therapy you need money :D", style: TextStyle(fontSize: 30.sp, color: Colors.black, fontWeight: FontWeight.normal))]),
+                    SizedBox(height: 740.h,),
                     Column(children: [TextButton(
-                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 58, 192, 154)), textStyle: WidgetStatePropertyAll(TextStyle(color: Color.fromARGB(255, 3, 0,71))), fixedSize: WidgetStatePropertyAll(Size(320, 50)))
+                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 58, 192, 154)), textStyle: WidgetStatePropertyAll(TextStyle(color: Color.fromARGB(255, 3, 0,71))), fixedSize: WidgetStatePropertyAll(Size(300, 50.h)))
                         ,onPressed: (){
                       Navigator.pushNamed(
                         context, '/login'
                       );
-                    }, child: Text("LOGIN", style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 3, 0, 71)),)),
-                      SizedBox(height: 20),
-                      Text("----------------OR----------------", style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.grey.shade100)),
-                      SizedBox(height: 20),
-                      OutlinedButton(style: ButtonStyle(fixedSize: WidgetStatePropertyAll(Size(320, 50)), side: WidgetStatePropertyAll(BorderSide(color: Colors.white))),
+                    }, child: Text("LOGIN", style: TextStyle(fontSize: 40.sp, color: Color.fromARGB(255, 3, 0, 71)),)),
+                      SizedBox(height: 20.h),
+                      Text("----------------OR----------------", style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.normal, color: Colors.grey.shade100)),
+                      SizedBox(height: 20.h),
+                      OutlinedButton(style: ButtonStyle(fixedSize: WidgetStatePropertyAll(Size(300, 50.h)), side: WidgetStatePropertyAll(BorderSide(color: Colors.white))),
                           onPressed: (){
                             Navigator.pushNamed(
                               context,'/signup'
                             );
                           },
-                          child: Text("SIGN UP", style: TextStyle(fontSize: 20, color: Colors.white)))]),
+                          child: Text("SIGN UP", style: TextStyle(fontSize: 40.sp, color: Colors.white)))]),
                   ])
               )
           ),

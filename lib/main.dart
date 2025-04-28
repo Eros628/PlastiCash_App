@@ -3,13 +3,16 @@ import 'screens/login_screen.dart';
 import 'screens/startup_screen.dart';
 import 'screens//home_screen.dart';
 import 'screens/signup_screen.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
-void main() async {
-  await dotenv.load();
-  runApp(PlastiCashApp());
+void main() {
+  runApp(
+      ScreenUtilInit(
+        designSize: Size(1080, 2400),
+        builder: (context,child) =>PlastiCashApp(),
+      )
+      );
 }
 
 class PlastiCashApp extends StatelessWidget{
@@ -21,10 +24,11 @@ class PlastiCashApp extends StatelessWidget{
         theme: ThemeData(textTheme: TextTheme(bodyMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "Poppins"))),
         debugShowCheckedModeBanner: false,
         title: "PlastiCash",
-        routes: {
-          '/home': (context) => HomePage()
+        /*routes: {
+           '/home': (context) => HomePage()
         },
-        initialRoute: '/home',
+        */
+        initialRoute: '/startup',
 
         onGenerateRoute: (settings) {
           switch (settings.name) {
@@ -69,6 +73,24 @@ class PlastiCashApp extends StatelessWidget{
                   transitionDuration: Duration(milliseconds: 800),
                   reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
                   pageBuilder: (context, animation, secondaryAnimation) => SignupScreen(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    final curvedAnimation = CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.linear,
+                    );
+
+                    return FadeTransition(
+                      opacity: curvedAnimation,
+                      child: child,
+                    );
+                  }
+              );
+
+            case '/home':
+              return PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 800),
+                  reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
+                  pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     final curvedAnimation = CurvedAnimation(
                       parent: animation,

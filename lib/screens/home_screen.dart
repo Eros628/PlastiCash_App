@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_finalprojects/screens/aboutus_screen.dart';
 import 'package:flutter_finalprojects/screens/map_screen.dart';
 import 'package:flutter_finalprojects/screens/milestone_screen.dart';
 import 'package:flutter_finalprojects/screens/profile_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+
+final LatLng bugoCoords = LatLng(8.5003, 124.7824);
 
 final bugoMarker = Marker(
   point: LatLng(8.5003, 124.7824), // Bugo, CDO
@@ -32,15 +35,15 @@ class _HomePageState extends State<HomePage> {
                 color: const Color.fromARGB(255, 211, 241, 223),
                 borderRadius: BorderRadius.horizontal(left: Radius.circular(65), right: Radius.zero),
               ),
-              height: 367,
+              height: 967.h,
               child: Column(children: [Div1(), Div2()]),
             ),
-            Container(height: 50, color: Color.fromARGB(255, 211, 241, 223)),
+            Container(height: 200.h, color: Color.fromARGB(255, 211, 241, 223)),
             
             // Div3 with translation applied
             Expanded(
               child: Transform.translate(
-                offset: Offset(0, -50), // Move up by 50 pixels
+                offset: Offset(0, -70), // Move up by 50 pixels
                 child: SingleChildScrollView(child: Div3(onNavigate: (int newIndex) {
                   setState(() {
                     _currentIndex = newIndex;
@@ -68,42 +71,54 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       body: _screens[_currentIndex],
       bottomNavigationBar: AnimatedContainer(
+        
         duration: const Duration(milliseconds: 300),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (value) {
-            setState(() {
-              _currentIndex = value;
-            });
-          },
-          backgroundColor: Colors.white,
-          type: BottomNavigationBarType.fixed,
-          showUnselectedLabels: true,
-          showSelectedLabels: true,
-          selectedItemColor: Colors.green,
-          elevation: 0,
-          items:  [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+          child: SafeArea(
+            top: false,
+            child: Container(
+              height: 210.sp,
+              child: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (value) {
+                  setState(() {
+                    _currentIndex = value;
+                  });
+                },
+                backgroundColor:  Color.fromARGB(255, 27, 75, 61),
+                type: BottomNavigationBarType.fixed,
+                showUnselectedLabels: false,
+                showSelectedLabels: false,
+                selectedItemColor:  Color.fromARGB(255, 211, 241, 223),
+                unselectedItemColor: Colors.white,
+                iconSize: 30,
+                items:  [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: '',
+                    
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.pin_drop_outlined),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Image.asset('assets/logoIcon.png'),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.stacked_bar_chart_outlined),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person_2_rounded),
+                    label: '',
+                  ),
+                ],
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.pin_drop_outlined),
-              label: 'Location',
-            ),
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/logoIcon.png'),
-              label: 'About Us',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.stacked_bar_chart_outlined),
-              label: 'Milestone',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_2_rounded),
-              label: 'Profile',
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -125,16 +140,16 @@ class _Div1State extends State<Div1> {
   Widget build(BuildContext context) {
     return Container(
       child: Row(
-          spacing: 100,
+          spacing: 100.w,
           children:[Padding(
-              padding: const EdgeInsets.fromLTRB(36, 56, 36, 30),
+              padding: const EdgeInsets.fromLTRB(36, 56, 36, 20),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Text("Good Morning,", style: TextStyle(fontSize: 25, color: Colors.green.shade900),), Text("Eros Lucagbo", style: TextStyle(fontSize: 18, color: Colors.green.shade800, fontWeight: FontWeight.normal))])),
+                  children: [Text("Good Morning,", style: TextStyle(fontSize: 70.sp, color: Colors.green.shade900),), Text("Eros Lucagbo", style: TextStyle(fontSize: 60.sp, color: Colors.green.shade800, fontWeight: FontWeight.normal))])),
             Container(
                 margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                height: 50,
-                width: 50,
+                height: 100.h,
+                width: 100.w,
                 decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(50))),
                 child:Icon(Icons.notifications, size: 30, ))
           ]),
@@ -156,30 +171,30 @@ class _Div2State extends State<Div2> {
   Widget build(BuildContext context) {
 
     return Container(
-      height: 180,
-      width: 370,
+      height: 480.h,
+      width: 952.w,
       decoration: BoxDecoration(color: Color.fromARGB(255, 27, 75, 61), borderRadius: BorderRadius.all(Radius.circular(25))),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [Row(
-                spacing: 70,
-                children:[Text("Total Collected Bottles", style: TextStyle(fontSize: 20),), Container(decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(50))),  child: Icon(Icons.more_horiz, color: Colors.black,))]),
-              Text("-----------------------------------------", style: TextStyle(fontWeight: FontWeight.w400)),
+                spacing: 70.w,
+                children:[Text("Total Collected Bottles", style: TextStyle(fontSize: 60.sp),), Container(decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(50))),  child: Icon(Icons.more_horiz, color: Colors.black,))]),
+              Text("------------------------------", style: TextStyle(fontWeight: FontWeight.w400)),
               Padding(
-                padding: const EdgeInsets.fromLTRB(0,10,0,0),
+                padding:  EdgeInsets.fromLTRB(0,10.h,0,0),
                 child: Row(
-                    spacing: 50,
+                    spacing: 100.w,
                     children: [
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 8,
-                          children: [Text("Today", style: TextStyle(fontWeight: FontWeight.normal)),Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("3 Bottles", style: TextStyle(fontSize: 18))])]),
+                          children: [Text("Today", style: TextStyle(fontWeight: FontWeight.normal)),Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("3 Bottles", style: TextStyle(fontSize: 40.sp))])]),
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 8,
-                          children: [Text("This Month",style: TextStyle(fontWeight: FontWeight.normal)), Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("26 Bottles",style: TextStyle(fontSize: 18))])])
+                          children: [Text("This Month",style: TextStyle(fontWeight: FontWeight.normal)), Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("26 Bottles",style: TextStyle(fontSize: 40.sp))])])
                       
                     
                     ]),
@@ -206,7 +221,7 @@ class _Div3State extends State<Div3> {
       decoration: BoxDecoration( color: Colors.white,borderRadius: BorderRadius.only(topRight: Radius.circular(65))),
       child: Column(
         children: [
-          Div3MapSection(onNavigate: widget.onNavigate),SizedBox(height: 10,), MilestoneSection(onNavigate: widget.onNavigate,),SizedBox(height: 10,), Div3AboutUs()
+          Div3MapSection(onNavigate: widget.onNavigate),SizedBox(height: 20.h,), MilestoneSection(onNavigate: widget.onNavigate,),SizedBox(height: 20.h,), Div3AboutUs()
         ],
       ),
     );
@@ -232,29 +247,29 @@ class _Div3MapSectionState extends State<Div3MapSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 10,),
+        SizedBox(height: 20.h,),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               "Suggested Location",
-              style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+              style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp),
             ),
-            SizedBox(width: 100), // Adjust this to control space between widgets
+            SizedBox(width: 200.w), // Adjust this to control space between widgets
             TextButton(
               onPressed: () {
                 widget.onNavigate(1);
               },
               child: Text(
                 "Expand",
-                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp),
               ),
             ),
           ],
         ),
         SizedBox(
-          height: 192,
-          width: 352,
+          height: 592.h,
+          width: 952.w,
           child: ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(25)),
               child: Hero(
@@ -283,7 +298,7 @@ class _Div3MapSectionState extends State<Div3MapSection> {
               ),
           ),
         ),
-        SizedBox(height: 10,),
+        SizedBox(height: 20.h,),
       ]
     );
   }
@@ -310,24 +325,24 @@ class _MilestoneSectionState extends State<MilestoneSection> {
             children: [
               Text(
                 "Milestones",
-                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp),
               ),
-              SizedBox(width: 185), // Adjust space between widgets
+              SizedBox(width: 385.w), // Adjust space between widgets
               TextButton(
                 onPressed: () {
                   widget.onNavigate(1);
                 },
                 child: Text(
                   "See All",
-                  style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+                  style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp),
                 ),
               ),
             ],
           ),
         Container(
           padding: EdgeInsets.only(top: 10),
-          height: 270,
-          width: 352,
+          height: 700.h,
+          width: 952.w,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(25)),
           ),
@@ -336,7 +351,7 @@ class _MilestoneSectionState extends State<MilestoneSection> {
               Container(
                 padding: EdgeInsets.all(25),
                 decoration: BoxDecoration(color: Colors.white,
-                  border: Border(left: BorderSide(color: Colors.blue.shade200, width:10)),
+                  border: Border(left: BorderSide(color: Colors.blue.shade200, width:20.h)),
                   boxShadow: [
                     BoxShadow(
                       color: Color.fromARGB(20, 0, 0, 0), // Shadow color
@@ -349,8 +364,8 @@ class _MilestoneSectionState extends State<MilestoneSection> {
                 ),
                 child: Column(
                   children: [
-                    Text("Recycle 5 kg of plastic (P20 bonus).", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 15)),
-                    SizedBox(height: 20,),
+                    Text("Recycle 5 kg of plastic (P20 bonus).", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
+                    SizedBox(height: 40.h,),
                     SizedBox(
                       child: LinearProgressIndicator(
                         value: progress +0.1,
@@ -363,12 +378,12 @@ class _MilestoneSectionState extends State<MilestoneSection> {
                   ],
                 ),
               ),
-              SizedBox(height: 30,),
+              SizedBox(height: 50.h,),
               Container(
                 padding: EdgeInsets.all(25),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border(left: BorderSide(color: Colors.green.shade900, width:10 )),
+                  border: Border(left: BorderSide(color: Colors.green.shade900, width:20.w )),
                    boxShadow: [
                     BoxShadow(
                       color: Color.fromARGB(20, 0, 0, 0), // Shadow color
@@ -382,8 +397,8 @@ class _MilestoneSectionState extends State<MilestoneSection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Recycle 50 kg of plastic\n(P100 bonus)", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 15)),
-                    SizedBox(height: 20,),
+                    Text("Recycle 50 kg of plastic\n(P100 bonus)", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
+                    SizedBox(height: 40.h,),
                     SizedBox(
                       child: LinearProgressIndicator(
                         value: progress,
@@ -414,27 +429,27 @@ class Div3AboutUs extends StatelessWidget {
             children: [
               Text(
                 "About Us",
-                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+                style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp),
               ),
-              SizedBox(width: 185), // Adjust space between widgets
+              SizedBox(width: 385.w), // Adjust space between widgets
               TextButton(
                 onPressed: () {},
                 child: Text(
                   "More",
-                  style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 18),
+                  style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp),
                 ),
               ),
             ],
           ),
         Container(
-          height: 192,
-          width: 352,
+          height: 592.h,
+          width: 952.w,
           decoration: BoxDecoration(
             color: Colors.grey,
             borderRadius: BorderRadius.all(Radius.circular(25)),
           ),
         ),
-        SizedBox(height: 60,)
+        SizedBox(height: 120.h,)
     ]);
   }
 }
