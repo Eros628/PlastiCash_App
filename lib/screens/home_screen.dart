@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_finalprojects/screens/aboutus_screen.dart';
 import 'package:flutter_finalprojects/screens/map_screen.dart';
-import 'package:flutter_finalprojects/screens/milestone_screen.dart';
+import 'package:flutter_finalprojects/screens/reward_screen.dart';
 import 'package:flutter_finalprojects/screens/profile_screen.dart';
 import 'package:flutter_finalprojects/screens/qr_scanner.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -10,7 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 
-
+const Color primaryColor =  Color.fromARGB(255, 27, 75, 61);
 
 final LatLng bugoCoords = LatLng(8.5003, 124.7824);
 
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     _buildHomeContent(),
     MapScreen(),
     QrScanner(),
-    MilestoneScreen(),
+    RewardsScreen(),
     ProfileScreen(),
   ];
 
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                     _currentIndex= value;
                   });
                 },
-                backgroundColor:  Color.fromARGB(255, 27, 75, 61),
+                backgroundColor:  primaryColor,
                 type: BottomNavigationBarType.fixed,
                 showUnselectedLabels: false,
                 showSelectedLabels: false,
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: Icon(Icons.stacked_bar_chart_outlined),
+                    icon: Icon(Icons.emoji_events),
                     label: '',
                   ),
                   BottomNavigationBarItem(
@@ -174,7 +174,7 @@ class _Div2State extends State<Div2> {
     return Container(
       height: 480.h,
       width: 952.w,
-      decoration: BoxDecoration(color: Color.fromARGB(255, 27, 75, 61), borderRadius: BorderRadius.all(Radius.circular(25))),
+      decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.all(Radius.circular(25))),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
         child: Column(

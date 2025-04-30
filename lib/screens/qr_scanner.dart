@@ -12,8 +12,10 @@ class QrScanner extends StatefulWidget {
 
 class _QrScannerState extends State<QrScanner> {
   final MobileScannerController controller = MobileScannerController(
-    detectionSpeed: DetectionSpeed.noDuplicates,
-    facing: CameraFacing.back
+    detectionSpeed: DetectionSpeed.normal,
+    facing: CameraFacing.back,
+
+    
   );
 
   void _handleBarcode(BarcodeCapture capture) {
@@ -60,22 +62,57 @@ class _QrScannerState extends State<QrScanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: MobileScanner(
-        scanWindow: Rect.fromCenter(center:  Offset(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height / 2)
-        , 
+        
+        scanWindow: Rect.fromCenter(center:  Offset(MediaQuery.of(context).size.width / 2, MediaQuery.of(context).size.height / 2), 
         width: 800.w, 
         height: 800.h),
         overlayBuilder: (context, constraints){
-          return Center(
-          child: Container(
-            width: 800.w,
-            height: 800.h,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border.all(color: Colors.white, width: 2),
-              borderRadius: BorderRadius.all(Radius.circular(25)),
-            ),
-          ),
-                      );
+          return Stack(
+            children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.only(top: 200.h),
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 27, 75, 61),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 5,
+                        spreadRadius: 2,
+                        offset: Offset(2, 4)
+                      )
+                    ]
+                  ),
+                  child: Text("Scan Machine QR Code\n to Claim Reward", style: TextStyle(fontSize: 40.sp),textAlign: TextAlign.center,),
+                ),
+              ),
+              Center(
+              
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      width: 800.w,
+                      height: 800.h,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(color: Colors.white, width: 2),
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50.h,
+                    ),
+                    Text("Align the QR code within the frame to scan",style: TextStyle(fontSize: 35.sp),)
+                ],
+              ),
+              ),
+              
+            ],
+          );
         },
         controller: controller,
         onDetect: _handleBarcode,
