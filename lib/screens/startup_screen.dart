@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/screens/signup_screen.dart';
-import '/screens/login_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StartupScreen extends StatelessWidget {

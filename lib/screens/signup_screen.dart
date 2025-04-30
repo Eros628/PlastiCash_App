@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/screens/login_screen.dart';
 import 'startup_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

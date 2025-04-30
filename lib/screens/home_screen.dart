@@ -3,9 +3,13 @@ import 'package:flutter_finalprojects/screens/aboutus_screen.dart';
 import 'package:flutter_finalprojects/screens/map_screen.dart';
 import 'package:flutter_finalprojects/screens/milestone_screen.dart';
 import 'package:flutter_finalprojects/screens/profile_screen.dart';
+import 'package:flutter_finalprojects/screens/qr_scanner.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+
+
 
 
 final LatLng bugoCoords = LatLng(8.5003, 124.7824);
@@ -23,7 +27,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-
   Widget _buildHomeContent() {
     return SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -46,7 +49,7 @@ class _HomePageState extends State<HomePage> {
                 offset: Offset(0, -70), // Move up by 50 pixels
                 child: SingleChildScrollView(child: Div3(onNavigate: (int newIndex) {
                   setState(() {
-                    _currentIndex = newIndex;
+                    _currentIndex= newIndex;
                   });
                 })),
               ),
@@ -59,7 +62,7 @@ class _HomePageState extends State<HomePage> {
    List<Widget> get _screens => [
     _buildHomeContent(),
     MapScreen(),
-    AboutusScreen(),
+    QrScanner(),
     MilestoneScreen(),
     ProfileScreen(),
   ];
@@ -77,13 +80,13 @@ class _HomePageState extends State<HomePage> {
           borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
           child: SafeArea(
             top: false,
-            child: Container(
-              height: 210.sp,
+            child: SizedBox(
+              height: 210.h,
               child: BottomNavigationBar(
                 currentIndex: _currentIndex,
                 onTap: (value) {
                   setState(() {
-                    _currentIndex = value;
+                    _currentIndex= value;
                   });
                 },
                 backgroundColor:  Color.fromARGB(255, 27, 75, 61),
@@ -92,7 +95,7 @@ class _HomePageState extends State<HomePage> {
                 showSelectedLabels: false,
                 selectedItemColor:  Color.fromARGB(255, 211, 241, 223),
                 unselectedItemColor: Colors.white,
-                iconSize: 30,
+                iconSize: 27,
                 items:  [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.home),
@@ -104,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: Image.asset('assets/logoIcon.png'),
+                    icon: Icon(Icons.qr_code_scanner, size: 34,),
                     label: '',
                   ),
                   BottomNavigationBarItem(
@@ -138,22 +141,20 @@ class Div1 extends StatefulWidget
 class _Div1State extends State<Div1> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-          spacing: 100.w,
-          children:[Padding(
-              padding: const EdgeInsets.fromLTRB(36, 56, 36, 20),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Text("Good Morning,", style: TextStyle(fontSize: 70.sp, color: Colors.green.shade900),), Text("Eros Lucagbo", style: TextStyle(fontSize: 60.sp, color: Colors.green.shade800, fontWeight: FontWeight.normal))])),
-            Container(
-                margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
-                height: 100.h,
-                width: 100.w,
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(50))),
-                child:Icon(Icons.notifications, size: 30, ))
-          ]),
-    );
+    return Row(
+        spacing: 100.w,
+        children:[Padding(
+            padding: const EdgeInsets.fromLTRB(36, 56, 36, 20),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [Text("Good Morning,", style: TextStyle(fontSize: 70.sp, color: Colors.green.shade900),), Text("Eros Lucagbo", style: TextStyle(fontSize: 60.sp, color: Colors.green.shade800, fontWeight: FontWeight.normal))])),
+          Container(
+              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+              height: 100.h,
+              width: 100.w,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(50))),
+              child:Icon(Icons.notifications, size: 30, ))
+        ]);
 
   }
 }
