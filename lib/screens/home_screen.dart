@@ -12,8 +12,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 
 const Color primaryColor =  Color.fromARGB(255, 27, 75, 61);
-
 final LatLng bugoCoords = LatLng(8.5003, 124.7824);
+int _currentIndex = 0;
 
 final bugoMarker = Marker(
   point: LatLng(8.5003, 124.7824), // Bugo, CDO
@@ -27,7 +27,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
   Widget _buildHomeContent() {
     return SizedBox(
         height: MediaQuery.of(context).size.height,
