@@ -7,6 +7,7 @@ import 'package:flutter_finalprojects/screens/qr_scanner.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 
 
@@ -73,56 +74,25 @@ class _HomePageState extends State<HomePage> {
       extendBody: true,
       backgroundColor: Colors.white,
       body: _screens[_currentIndex],
-      bottomNavigationBar: AnimatedContainer(
+      bottomNavigationBar: CurvedNavigationBar(
+        index: _currentIndex,
+        onTap: (value) {
+          setState(() {
+            _currentIndex= value;
+          });
+        },
         
-        duration: const Duration(milliseconds: 300),
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-          child: SafeArea(
-            top: false,
-            child: SizedBox(
-              height: 210.h,
-              child: BottomNavigationBar(
-                currentIndex: _currentIndex,
-                onTap: (value) {
-                  setState(() {
-                    _currentIndex= value;
-                  });
-                },
-                backgroundColor:  primaryColor,
-                type: BottomNavigationBarType.fixed,
-                showUnselectedLabels: false,
-                showSelectedLabels: false,
-                selectedItemColor:  Color.fromARGB(255, 211, 241, 223),
-                unselectedItemColor: Colors.white,
-                iconSize: 27,
-                items:  [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: '',
-                    
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.pin_drop_outlined),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.qr_code_scanner, size: 34,),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.emoji_events),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_2_rounded),
-                    label: '',
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        backgroundColor:  Colors.transparent,
+        color: primaryColor,
+
+        items:  [
+          Icon(Icons.home, color: Colors.white,),
+          Icon(Icons.pin_drop_outlined, color: Colors.white, ),
+          Icon(Icons.qr_code_scanner, size: 34, color: Colors.white,),
+          Icon(Icons.emoji_events,  color: Colors.white,),
+          Icon(Icons.person_2_rounded,  color: Colors.white,),
+          
+        ],
       ),
     );
   }
@@ -325,13 +295,13 @@ class _MilestoneSectionState extends State<MilestoneSection> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Milestones",
+                "Challenges",
                 style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp),
               ),
               SizedBox(width: 385.w), // Adjust space between widgets
               TextButton(
                 onPressed: () {
-                  widget.onNavigate(1);
+                  widget.onNavigate(3);
                 },
                 child: Text(
                   "See All",
@@ -340,81 +310,29 @@ class _MilestoneSectionState extends State<MilestoneSection> {
               ),
             ],
           ),
-        Container(
-          padding: EdgeInsets.only(top: 10),
-          height: 700.h,
-          width: 952.w,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(25)),
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(25),
-                decoration: BoxDecoration(color: Colors.white,
-                  border: Border(left: BorderSide(color: Colors.blue.shade200, width:20.h)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                      spreadRadius: 2,   // Extent of the shadow
-                      blurRadius: 10,    // Softness of the shadow
-                      offset: Offset(0, 6),
-                       // Horizontal and vertical offset
-                    ),
-                  ]
-                ),
-                child: Column(
-                  children: [
-                    Text("Recycle 5 kg of plastic (P20 bonus).", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
-                    SizedBox(height: 40.h,),
-                    SizedBox(
-                      child: LinearProgressIndicator(
-                        value: progress +0.1,
-                        backgroundColor: Colors.grey,
-                        color: Colors.green,
-                        minHeight: 5,
-                      ),
-                    )
-                  
-                  ],
-                ),
-              ),
-              SizedBox(height: 50.h,),
-              Container(
-                padding: EdgeInsets.all(25),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(left: BorderSide(color: Colors.green.shade900, width:20.w )),
-                   boxShadow: [
-                    BoxShadow(
-                      color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                      spreadRadius: 2,   // Extent of the shadow
-                      blurRadius: 10,    // Softness of the shadow
-                      offset: Offset(0, 6),
-                       // Horizontal and vertical offset
-                    ),
-                  ],
-                  ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Recycle 50 kg of plastic\n(P100 bonus)", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
-                    SizedBox(height: 40.h,),
-                    SizedBox(
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: Colors.grey,
-                        color: Colors.green,
-                        minHeight: 5,
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
+        Padding(
+          padding: EdgeInsets.only(left: 50.w, right: 50.w),
+          child: ListView.builder(
+            padding: EdgeInsets.only(top: 0),
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: 2,
+            itemBuilder: (context, index){
+              return ChallengesCard(
+                text: challenges[index].text, 
+                progress: challenges[index].progress , 
+                points: challenges[index].points, 
+                onClaim: (){
+                  setState(() {
+                    challenges.removeAt(index);
+                  });
+                },
+                index: index,
+                color: challenges[index].color, 
+              );
+          }),
         ),
-    ]);
+      ]);
   } 
 }
 

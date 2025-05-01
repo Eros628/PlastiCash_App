@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_finalprojects/screens/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'redeem_screen.dart';
+
+
+List <Challenges> challenges = [
+    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 1.0, color: Color.fromRGBO(144, 202, 249, 1)),
+    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 0.0, color: primaryColor),
+    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 0.0, color: Color.fromRGBO(187, 213, 191, 1)),
+    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 0.0, color: Color.fromRGBO(0, 0, 0, 0.541) ),
+];
+
+List<Challenges> earned = [];
+bool goToRedeem = false;
+
 
 class RewardsScreen extends StatefulWidget {
   const RewardsScreen({super.key});
@@ -12,12 +25,11 @@ class RewardsScreen extends StatefulWidget {
 class _RewardsScreenState extends State<RewardsScreen> {
   
   bool iSEarned = false;
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        
+      body: goToRedeem? RedeemScreen() : Column(
         children: [
           Container(
             height: 800.h,
@@ -63,7 +75,11 @@ class _RewardsScreenState extends State<RewardsScreen> {
                           bottom: -5,
                           left:16,
                           child: TextButton(
-                          onPressed: (){}, 
+                          onPressed: (){
+                             setState(() {
+                               goToRedeem = true;
+                             });
+                          }, 
                           style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color.fromRGBO(187, 213, 191, 1)),padding: WidgetStatePropertyAll(EdgeInsets.fromLTRB(80.w, 20.h, 80.w, 20.h))),
                           child: Text("REDEEM", style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 50.sp),)),
                         )
@@ -77,7 +93,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
           Flexible(
             child: SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.only(left: 70.w, right: 70.w, top: 50.h),
+                padding: EdgeInsets.only(top: 50.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 30.h,
@@ -129,6 +145,15 @@ class _RewardsScreenState extends State<RewardsScreen> {
   }
 }
 
+class Challenges{
+  late final String text;
+  late final String points;
+  late final double progress;
+  late final Color color;
+  late final bool isClaimed;
+
+  Challenges({required this.text, required this.points, required this.progress, required this.color, this.isClaimed = false});
+}
 
 class Rewards extends StatefulWidget {
   const Rewards({super.key});
@@ -138,7 +163,6 @@ class Rewards extends StatefulWidget {
 }
 
 class _RewardsState extends State<Rewards> {
-  
   
   final ScrollController _scrollController_r = ScrollController();
 
@@ -157,22 +181,26 @@ class _RewardsState extends State<Rewards> {
       curve: Curves.easeOut,
     );
   }
+
   
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       spacing: 30.h,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Daily Bonus", style: TextStyle(color:  Color.fromARGB(255, 64, 64, 64), fontSize: 50.sp)),
+        Padding(
+          padding: EdgeInsets.only(left: 70.w, right: 70.w),
+          child: Text("Daily Bonus", style: TextStyle(color:  Color.fromARGB(255, 64, 64, 64), fontSize: 50.sp)),
+        ),
         SingleChildScrollView(
           controller: _scrollController_r,
           scrollDirection: Axis.horizontal,
           child: Padding(
           padding: EdgeInsets.only(top: 30.h, bottom: 30.h),
           child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                   IconButton(
                     onPressed: _scrollToEnd, 
@@ -318,193 +346,125 @@ class _RewardsState extends State<Rewards> {
             ),
           ),
         ),
-              SizedBox(
-                height: 40.h,
-              ),
-              Text("Challenges", style: TextStyle(color:  Color.fromARGB(255, 64, 64, 64), fontSize: 50.sp)),
-              Container(
-                padding: EdgeInsets.all(25),
-                decoration: BoxDecoration(color: Colors.white,
-                border: Border(left: BorderSide(color: Colors.blue.shade200, width:20.h)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                    spreadRadius: 2,   // Extent of the shadow
-                    blurRadius: 10,    // Softness of the shadow
-                    offset: Offset(0, 6),
-                    // Horizontal and vertical offset
-                  ),
-                ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Recycle 5 kg of plastic.", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
-                    SizedBox(height: 40.h),
-                    SizedBox(
-                      child: LinearProgressIndicator(
-                        value: 0.1,
-                        backgroundColor: Colors.grey,
-                        color: Colors.green,
-                        minHeight: 5,
-                      ),
-                    ),
-                    SizedBox(height: 40.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(primaryColor),shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))),
-                          onPressed: (){}, 
-                          child:Padding(
-                              padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 0, bottom: 0),
-                                child: Text("Claim", style: TextStyle(fontSize: 40.sp, color: Colors.white),),
-                          )
-                        ),
-                        Text("15 Points", style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)
-                      ],
-                    )
-                    ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(25),
-                decoration: BoxDecoration(color: Colors.white,
-                border: Border(left: BorderSide(color: primaryColor, width:20.h)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                    spreadRadius: 2,   // Extent of the shadow
-                    blurRadius: 10,    // Softness of the shadow
-                    offset: Offset(0, 6),
-                    // Horizontal and vertical offset
-                  ),
-                ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Recycle 5 kg of plastic.", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
-                    SizedBox(height: 40.h),
-                    SizedBox(
-                      child: LinearProgressIndicator(
-                        value: 0.1,
-                        backgroundColor: Colors.grey,
-                        color: Colors.green,
-                        minHeight: 5,
-                      ),
-                    ),
-                    SizedBox(height: 40.h),
-                      Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(primaryColor),shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))),
-                          onPressed: (){}, 
-                          child:Padding(
-                              padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 0, bottom: 0),
-                                child: Text("Claim", style: TextStyle(fontSize: 40.sp, color: Colors.white),),
-                          )
-                        ),
-                        Text("15 Points", style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)
-                      ],
-                    )
-                    ],
-                ),
-              ),
-                Container(
-                padding: EdgeInsets.all(25),
-                decoration: BoxDecoration(color: Colors.white,
-                border: Border(left: BorderSide(color: Color.fromRGBO(187, 213, 191, 1), width:20.h)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                    spreadRadius: 2,   // Extent of the shadow
-                    blurRadius: 10,    // Softness of the shadow
-                    offset: Offset(0, 6),
-                    // Horizontal and vertical offset
-                  ),
-                ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Recycle 5 kg of plastic.", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
-                    SizedBox(height: 40.h),
-                    SizedBox(
-                      child: LinearProgressIndicator(
-                        value: 0.1,
-                        backgroundColor: Colors.grey,
-                        color: Colors.green,
-                        minHeight: 5,
-                      ),
-                    ),
-                    SizedBox(height: 40.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(primaryColor),shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))),
-                          onPressed: (){}, 
-                          child:Padding(
-                              padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 0, bottom: 0),
-                                child: Text("Claim", style: TextStyle(fontSize: 40.sp, color: Colors.white),),
-                          )
-                        ),
-                        Text("15 Points", style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)
-                      ],
-                    )
-                    ],
-                ),
-              ),
-                Container(
-                padding: EdgeInsets.all(25),
-                decoration: BoxDecoration(color: Colors.white,
-                border: Border(left: BorderSide(color: Colors.black54, width:20.h)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                    spreadRadius: 2,   // Extent of the shadow
-                    blurRadius: 10,    // Softness of the shadow
-                    offset: Offset(0, 6),
-                    // Horizontal and vertical offset
-                  ),
-                ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Recycle 5 kg of plastic.", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
-                    SizedBox(height: 40.h),
-                    SizedBox(
-                      child: LinearProgressIndicator(
-                        value: 0.1,
-                        backgroundColor: Colors.grey,
-                        color: Colors.green,
-                        minHeight: 5,
-                      ),
-                    ),
-                    SizedBox(height: 40.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(primaryColor),shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))),
-                          onPressed: (){}, 
-                          child:Padding(
-                              padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 0, bottom: 0),
-                                child: Text("Claim", style: TextStyle(fontSize: 40.sp, color: Colors.white),),
-                          )
-                        ),
-                        Text("15 Points", style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 220.h,
-               )
+        SizedBox(
+          height: 40.h,
+          ),
+        Padding(
+          padding: EdgeInsets.only(left: 70.w, right: 70.w),
+          child: Text("Challenges", style: TextStyle(color:  Color.fromARGB(255, 64, 64, 64), fontSize: 50.sp)),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 70.w, right: 70.w),
+          child: ListView.builder(
+            padding: EdgeInsets.only(top: 0),
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: challenges.length,
+            itemBuilder: (context, index){
+              return ChallengesCard(
+                text: challenges[index].text, 
+                progress: challenges[index].progress , 
+                points: challenges[index].points, 
+                onClaim: (){
+                  setState(() {
+                    challenges.removeAt(index);
+                    earned.add(challenges[index]);
+                  });
+                },
+                index: index,
+                color: challenges[index].color,
+                
+                );
+          }),
+        ),
+        SizedBox(
+          height: 220.h,
+          )
       ],
     );
   }
 }
+
+
+
+class ChallengesCard extends StatefulWidget {
+  final String text;
+  final double progress;
+  final String points;
+  final Color color;
+  final int index;
+  final VoidCallback onClaim;
+  const ChallengesCard({super.key, required this.text, required this.progress, required this.points, required this.onClaim, required this.index, required this.color});
+
+  @override
+  State<ChallengesCard> createState() => _ChallengesState();
+}
+
+class _ChallengesState extends State<ChallengesCard> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding:EdgeInsets.only(top: 30.h),
+      child: Container(
+                padding: EdgeInsets.all(25),
+                decoration: BoxDecoration(color: Colors.white,
+                border: Border(left: BorderSide(color: widget.color, width:20.h)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                    spreadRadius: 2,   // Extent of the shadow
+                    blurRadius: 10,    // Softness of the shadow
+                    offset: Offset(0, 6),
+                    // Horizontal and vertical offset
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(10)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.text, style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontSize: 40.sp)),
+                    SizedBox(height: 40.h),
+                    SizedBox(
+                      child: LinearProgressIndicator(
+                        value:widget.progress,
+                        backgroundColor: Colors.grey,
+                        color: Colors.green,
+                        minHeight: 5,
+                      ),
+                    ),
+                    SizedBox(height: 40.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          style: ButtonStyle(backgroundColor: widget.progress== 1.0 ? WidgetStatePropertyAll(primaryColor) : WidgetStatePropertyAll((Colors.black54)),shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))),
+                          onPressed: (){
+                            if (widget.progress == 1.0){
+                                widget.onClaim();
+                            }
+                            else{
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Complete the challenge first to earn your points.", style: TextStyle(fontSize: 30.sp),)
+                                )
+                              );
+                            }
+                          }, 
+                          child:Padding(
+                              padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 0, bottom: 0),
+                                child: Text("Claim", style: TextStyle(fontSize: 40.sp, color: Colors.white),),
+                          )
+                        ),
+                        Text(widget.points, style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)
+                      ],
+                    )
+                  ])
+      )
+    );
+  }
+}
+
+
 
 class Earned extends StatefulWidget {
   const Earned({super.key});
@@ -516,11 +476,53 @@ class Earned extends StatefulWidget {
 class _EarnedState extends State<Earned> {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return earned.isEmpty?  Align(
+      alignment: Alignment.center,
+      child: Padding(
+        padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 5),
+        child: Text("No Rewards Claimed", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64))),
+      ),
+    )
+    :
+    Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text("No history", style: TextStyle(color: primaryColor),)
+        ListView.builder(
+          padding: EdgeInsets.only(top: 0, left: 70.w, right: 70.w),
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: earned.length,
+          itemBuilder:(context, index){
+            return Container(
+              padding: EdgeInsets.all(25),
+                decoration: BoxDecoration(color: Colors.white,
+                border: Border(left: BorderSide(color: Colors.lightBlue, width:20.h)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                    spreadRadius: 2,   // Extent of the shadow
+                    blurRadius: 10,    // Softness of the shadow
+                    offset: Offset(0, 6),
+                    // Horizontal and vertical offset
+                  ),
+                ],
+                borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Claimed", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64)),),
+                      Text(earned[index].points, style: TextStyle(color: Color.fromARGB(255, 64, 64, 64))),
+                    ],
+                  ),
+                  Text("24 May 2024", style: TextStyle(color: Color.fromARGB(255, 64, 64, 64), fontWeight: FontWeight.normal))
+                ],
+              ),
+            );
+          } )
       ],
     );
   }
