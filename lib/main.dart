@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/screens/profile_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/startup_screen.dart';
 import 'screens//home_screen.dart';
@@ -37,6 +38,23 @@ class PlastiCashApp extends StatelessWidget{
                   transitionDuration: Duration(milliseconds: 800),
                   reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
                   pageBuilder: (context, animation, secondaryAnimation) => StartupScreen(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    final curvedAnimation = CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.linear,
+                    );
+
+                    return FadeTransition(
+                      opacity: curvedAnimation,
+                      child: child,
+                    );
+                  }
+              );
+            case '/loginstart':
+              return PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 800),
+                  reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
+                  pageBuilder: (context, animation, secondaryAnimation) => LoginStart(),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     final curvedAnimation = CurvedAnimation(
                       parent: animation,
@@ -103,6 +121,8 @@ class PlastiCashApp extends StatelessWidget{
                     );
                   }
               );
+
+            
             default:
               return MaterialPageRoute(builder: (_) => StartupScreen());
           }

@@ -1,8 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/screens/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+
 
 class StartupScreen extends StatelessWidget {
   const StartupScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Align(
+                  alignment: Alignment.topLeft,
+                  child: Container(height: 130,width: 120,decoration: BoxDecoration(color: Color.fromARGB(143, 27, 75, 61), borderRadius:BorderRadius.only(bottomRight: Radius.circular(200), bottomLeft: Radius.circular(10)) ),),
+                ),
+          Container(height: 80,width: 180,decoration: BoxDecoration(color: Color.fromARGB(143, 27, 75, 61), borderRadius:BorderRadius.only(bottomRight: Radius.circular(200), bottomLeft: Radius.circular(200)), ),),
+          Center(
+          child: Column(
+            spacing: 50.h,
+            children: [
+              Container(padding: EdgeInsets.only(top:300.h) ,
+                      child: Hero(tag:"logo",child: Image(image: AssetImage('assets/logo.png'),)),
+                    ),
+              Column(
+                spacing: 50.h,
+                children: [
+                  Text("Welcome to PlastiCash", 
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 50.sp, color: Colors.black)),
+                  Padding(
+                    padding: EdgeInsets.only(left: 50.w, right: 50.w),
+                    child: Text("Plasticash is a student-led \ninitiative dedicated to promoting \nsustainability through technology \nand innovation", 
+                    style: TextStyle(color: Colors.black, fontSize: 40.sp, fontWeight: FontWeight.normal),textAlign: TextAlign.center),
+                  )
+                ],
+              ),
+              SizedBox(height: 
+              100.h),
+              TextButton(
+                style: ButtonStyle(shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius:BorderRadius.circular(15))),padding: WidgetStatePropertyAll(EdgeInsets.only(left: 220.w, right: 220.w, top: 50.h, bottom: 50.h)), backgroundColor: WidgetStatePropertyAll(primaryColor)),
+                onPressed: (){
+                  Navigator.pushNamed(context, '/loginstart');
+                }, 
+                child: Text("GET STARTED", style: TextStyle(color: Colors.white, fontSize: 50.sp),))
+              
+              ]),
+        ),
+      ])
+
+    );
+  }
+}
+
+
+
+
+
+class LoginStart extends StatelessWidget {
+  const LoginStart({super.key});
 
   @override
   Widget build(BuildContext context) {

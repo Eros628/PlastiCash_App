@@ -13,7 +13,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 const Color primaryColor =  Color.fromARGB(255, 27, 75, 61);
 final LatLng bugoCoords = LatLng(8.5003, 124.7824);
-int _currentIndex = 0;
+
+
 
 final bugoMarker = Marker(
   point: LatLng(8.5003, 124.7824), // Bugo, CDO
@@ -27,6 +28,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
+  bool isChangeColor = false;
   Widget _buildHomeContent() {
     return SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -39,7 +42,11 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.horizontal(left: Radius.circular(65), right: Radius.zero),
               ),
               height: 967.h,
-              child: Column(children: [Div1(), Div2()]),
+              child: Column(children: [Div1(), Div2(onNavigate: (int newIndex){
+                setState(() {
+                  _currentIndex = newIndex;
+                });
+              })]),
             ),
             Container(height: 200.h, color: Color.fromARGB(255, 211, 241, 223)),
             
@@ -64,14 +71,22 @@ class _HomePageState extends State<HomePage> {
     MapScreen(),
     QrScanner(),
     RewardsScreen(),
-    ProfileScreen(),
+    ProfileScreen(onNavigate: (int newIndex){
+      setState(() {
+        _currentIndex = newIndex;
+      });
+    }, isChangeColor: (bool newChangeColor){
+        setState(() {
+          isChangeColor = newChangeColor;
+        });
+    }),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white ,
       body: _screens[_currentIndex],
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
@@ -82,14 +97,14 @@ class _HomePageState extends State<HomePage> {
         },
         
         backgroundColor:  Colors.transparent,
-        color: primaryColor,
+        color: isChangeColor? Colors.white: primaryColor,
 
         items:  [
-          Icon(Icons.home, color: Colors.white,),
-          Icon(Icons.pin_drop_outlined, color: Colors.white, ),
-          Icon(Icons.qr_code_scanner, size: 34, color: Colors.white,),
-          Icon(Icons.emoji_events,  color: Colors.white,),
-          Icon(Icons.person_2_rounded,  color: Colors.white,),
+          Icon(Icons.home, color:  isChangeColor? primaryColor: Colors.white,),
+          Icon(Icons.pin_drop_outlined, color: isChangeColor? primaryColor: Colors.white ),
+          Icon(Icons.qr_code_scanner, size: 34, color: isChangeColor? primaryColor: Colors.white),
+          Icon(Icons.emoji_events,  color: isChangeColor? primaryColor: Colors.white),
+          Icon(Icons.person_2_rounded,  color: isChangeColor? primaryColor: Colors.white),
           
         ],
       ),
@@ -130,7 +145,8 @@ class _Div1State extends State<Div1> {
 
 class Div2 extends StatefulWidget
 {
-  const Div2({super.key});
+  final Function(int) onNavigate;
+  const Div2({super.key, required this.onNavigate});
 
   @override
   State<Div2> createState() => _Div2State();
@@ -140,36 +156,38 @@ class _Div2State extends State<Div2> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-      height: 480.h,
-      width: 952.w,
-      decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.all(Radius.circular(25))),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Row(
-                spacing: 70.w,
-                children:[Text("Total Collected Bottles", style: TextStyle(fontSize: 60.sp),), Container(decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(50))),  child: Icon(Icons.more_horiz, color: Colors.black,))]),
-              Text("------------------------------", style: TextStyle(fontWeight: FontWeight.w400)),
-              Padding(
-                padding:  EdgeInsets.fromLTRB(0,10.h,0,0),
-                child: Row(
-                    spacing: 100.w,
-                    children: [
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 8,
-                          children: [Text("Today", style: TextStyle(fontWeight: FontWeight.normal)),Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("3 Bottles", style: TextStyle(fontSize: 40.sp))])]),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 8,
-                          children: [Text("This Month",style: TextStyle(fontWeight: FontWeight.normal)), Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("26 Bottles",style: TextStyle(fontSize: 40.sp))])])
-                      
-                    
-                    ]),
-              )
-            ]),
+    return GestureDetector(
+      onTap: () => widget.onNavigate(4),
+      child: Container(
+        height: 480.h,
+        width: 952.w,
+        decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.all(Radius.circular(25))),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [Row(
+                  spacing: 70.w,
+                  children:[Text("Total Collected Bottles", style: TextStyle(fontSize: 60.sp),), Container(decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(50))),  child: Icon(Icons.more_horiz, color: Colors.black,))]),
+                Text("------------------------------", style: TextStyle(fontWeight: FontWeight.w400)),
+                Padding(
+                  padding:  EdgeInsets.fromLTRB(0,10.h,0,0),
+                  child: Row(
+                      spacing: 100.w,
+                      children: [
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 8,
+                            children: [Text("Today", style: TextStyle(fontWeight: FontWeight.normal)),Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("3 Bottles", style: TextStyle(fontSize: 40.sp))])]),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 8,
+                            children: [Text("This Month",style: TextStyle(fontWeight: FontWeight.normal)), Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("26 Bottles",style: TextStyle(fontSize: 40.sp))])])
+                      ]),
+                )
+              ]
+            ),
+        ),
       ),
     );
   }
