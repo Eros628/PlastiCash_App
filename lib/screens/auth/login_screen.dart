@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
 import '/screens/startup_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -14,10 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController  = TextEditingController();
-
-
-  final String email = "eroslucagbo@gmail.com";
-  final String password = "1234";
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +64,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Hero( tag:"logo",child: Image(image: AssetImage('assets/logo.png'),height: 700.h,)),
                       )]),
                       
+                      isLoading? 
+                      Center(
+                        child: Column(
+                          spacing: 50.h,
+                          children: [
+                            CircularProgressIndicator(color: Colors.white),
+                            Text("Logging In", style: TextStyle(color: Colors.white, fontSize: 60.sp),)
+                          ],
+                        ),
+                      ):
                       Column(spacing:  50.h, crossAxisAlignment: CrossAxisAlignment.center,children: [Text("Login",style: TextStyle(fontSize: 100.sp)),
                         TextField(
                             controller: emailController,
@@ -104,17 +112,36 @@ class _LoginScreenState extends State<LoginScreen> {
                         Column(
                           children: [
                             Center(child: TextButton(
-                              onPressed: (){
-                                if (email == emailController.text && passwordController.text == password){
-                                  Navigator.pushNamed(context, '/home');
-                                }
-                              }, 
+                              onPressed:()async{
+                          
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    final result = await AuthenticationService.loginUser(emailController.text.trim(), passwordController.text.trim());
+                                    
+                                    setState(() {
+                                      isLoading= false;
+                                    });
+
+                                    if (!mounted) return; 
+
+                                    if(result == null){
+                                      Navigator.pushNamed(context, '/home');
+                                    }
+
+                                    else{
+                                      
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(result), backgroundColor: Colors.red,),
+                                      );
+                                    }
+                                  },
                             style: ButtonStyle(fixedSize: WidgetStatePropertyAll(Size(150, 26.h)), backgroundColor: WidgetStatePropertyAll(Colors.white)),  
                             child: Text("LOGIN", style: TextStyle(fontSize: 40.sp, color: Color.fromARGB(255, 27, 75, 61))))),
                             Row(mainAxisAlignment:MainAxisAlignment.center,children: [Text("Don’t have an accont yet?", style: TextStyle(fontWeight: FontWeight.normal, fontSize: 35.sp)),
                               TextButton(
                                   onPressed:(){
-                                    Navigator.pushNamed(context, '/signup');
+                                      Navigator.pushNamed(context, '/signup');
                                   },
                                   child: Text("Register Now!",style: TextStyle(fontWeight: FontWeight.normal,color: Colors.green,decoration: TextDecoration.underline, decorationColor: Colors.green, fontSize: 35.sp)))
                             ])
@@ -127,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.topLeft,
                   child: IconButton(icon: Icon(Icons.arrow_back_rounded), color: Color.fromARGB(255, 255, 255, 255), iconSize: 50, padding: EdgeInsets.fromLTRB(20.w, 40.h,0.w,0.h),
                     onPressed: () {
-                      Navigator.pushNamedAndRemoveUntil(context, '/startup', (_) => false);
+                      Navigator.pushNamedAndRemoveUntil(context, '/loginstart', (_) => false);
                     },
                   ),
                 ),

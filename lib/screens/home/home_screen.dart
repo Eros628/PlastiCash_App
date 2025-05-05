@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/screens/aboutus_screen.dart';
-import 'package:flutter_finalprojects/screens/map_screen.dart';
-import 'package:flutter_finalprojects/screens/reward_screen.dart';
-import 'package:flutter_finalprojects/screens/profile_screen.dart';
-import 'package:flutter_finalprojects/screens/qr_scanner.dart';
+import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
+import 'package:flutter_finalprojects/screens/home/aboutus_screen.dart';
+import 'package:flutter_finalprojects/screens/home/map_screen.dart';
+import 'package:flutter_finalprojects/screens/home/reward_screen.dart';
+import 'package:flutter_finalprojects/screens/home/profile_screen.dart';
+import 'package:flutter_finalprojects/screens/home/qr_scanner.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,8 +14,6 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 const Color primaryColor =  Color.fromARGB(255, 27, 75, 61);
 final LatLng bugoCoords = LatLng(8.5003, 124.7824);
-
-
 
 final bugoMarker = Marker(
   point: LatLng(8.5003, 124.7824), // Bugo, CDO
@@ -85,6 +84,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBody: true,
       backgroundColor: Colors.white ,
       body: _screens[_currentIndex],
@@ -123,6 +123,8 @@ class Div1 extends StatefulWidget
 }
 
 class _Div1State extends State<Div1> {
+
+  final String? displayName =  AuthenticationService.displayName;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -131,7 +133,7 @@ class _Div1State extends State<Div1> {
             padding: const EdgeInsets.fromLTRB(36, 56, 36, 20),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text("Good Morning,", style: TextStyle(fontSize: 70.sp, color: Colors.green.shade900),), Text("Eros Lucagbo", style: TextStyle(fontSize: 60.sp, color: Colors.green.shade800, fontWeight: FontWeight.normal))])),
+                children: [Text("Good Morning,", style: TextStyle(fontSize: 70.sp, color: Colors.green.shade900),), Text(displayName ?? "", style: TextStyle(fontSize: 60.sp, color: Colors.green.shade800, fontWeight: FontWeight.normal))])),
           Container(
               margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
               height: 100.h,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "639952440712",
+    "project_id": "plasticash-app",
+    "storage_bucket": "plasticash-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:639952440712:android:91585b830a3dd24fd03e3d",
+        "android_client_info": {
+          "package_name": "com.plasticash.finalproject2025"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOAxEUMog3oZ8RR9Miy-kXtR-sLsRonPw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

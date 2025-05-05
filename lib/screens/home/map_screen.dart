@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_finalprojects/main.dart';
-import 'package:flutter_finalprojects/screens/home_screen.dart';
+import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
@@ -114,10 +114,10 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children:[
-          SizedBox(
-          height: MediaQuery.of(context).size.height,
+          SizedBox.expand(
           child: Hero(
             tag: "map",
             child: GestureDetector(
@@ -208,6 +208,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               child: TextField(
                 onSubmitted: (value) async {
+                  if(value.isNotEmpty){
                   LatLng? loc = await _getLocationFromCityName(value);
                   if (loc != null) {
                     Map<String, dynamic> station = {
@@ -219,6 +220,7 @@ class _MapScreenState extends State<MapScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('City not found'), ),
                     );
+                  }
                   }
                 },
                 controller: _searchController,

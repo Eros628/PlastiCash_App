@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_finalprojects/screens/home_screen.dart';
+import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'reward_screen.dart';
 
 class RedeemableRewards{

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/screens/home_screen.dart';
+import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
+import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_finalprojects/screens/startup_screen.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+
+
 
 
 class ProfileScreen extends StatefulWidget {
@@ -14,7 +18,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateMixin {
-
+  int navigate = 0;
   bool isDetailed = false;
   late AnimationController _controller;
   late Animation<Offset> _firstOffset;
@@ -60,12 +64,16 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBody: true,
       backgroundColor: Colors.white,
       floatingActionButton: IconButton(
-        onPressed: () {
-          _toggleView();        }, 
-        icon: showFirst ? Icon(Icons.menu, color:  Colors.white, size: 30,) : Icon(Icons.keyboard_double_arrow_left_outlined, color: Colors.white, size: 30)),
+        onPressed: navigate == 0? (){
+          _toggleView();
+        }:null,
+        icon: navigate == 0? showFirst ? Icon(Icons.menu, color:  Colors.white, size: 30,) : Icon(Icons.keyboard_double_arrow_left_outlined, color: Colors.white, size: 30) :  Icon(Icons.keyboard_double_arrow_left_outlined, color: primaryColor, size: 10)
+        
+        ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
       body: Align(
                 alignment: Alignment.topCenter,
@@ -94,6 +102,21 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                             ),
                           ),
                   ),
+                
+                  if(navigate == 1)...[
+                    SlideTransition(position: _secondOffset, child: PersonalData(navigate: (int newValue){
+                      setState(() {
+                        navigate = newValue;
+                      });
+                    }))
+                  ]
+
+                  else if(navigate == 2)...[
+                     SlideTransition(position: _secondOffset, child: ActivityHistory())
+                  ]
+
+                  
+                  else ...[
                   SlideTransition(
                     position: _firstOffset,
                     child: Padding(
@@ -261,7 +284,12 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                   ),
                   SlideTransition(
                     position: _secondOffset,
-                    child: MoreProfile()) ,
+                    child: MoreProfile(navigate: (int newValue){
+                      setState(() {
+                        navigate = newValue;
+                      });
+                    },)) ,
+                  ]
                 ])
             ),
     );
@@ -275,6 +303,9 @@ class WeeklyActivity extends StatefulWidget {
   @override
   State<WeeklyActivity> createState() => _WeeklyActivityState();
 }
+
+
+
 
 class _WeeklyActivityState extends State<WeeklyActivity> {
   @override
@@ -435,14 +466,17 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
 //detail profile
 
 class MoreProfile extends StatefulWidget {
+  final Function(int) navigate;
 
-  const MoreProfile({super.key});
+  const MoreProfile({super.key, required this.navigate});
   
   @override
   State<MoreProfile> createState() => _MoreProfileState();
 }
 
 class _MoreProfileState extends State<MoreProfile>{
+
+  final String? displayName = AuthenticationService.displayName;
 
   bool isSwitch = true;
 
@@ -455,193 +489,426 @@ class _MoreProfileState extends State<MoreProfile>{
   @override
   Widget build(BuildContext context) {
     return  Padding(
-      padding: EdgeInsets.only(top: 540.h, left: 50.w, right: 40.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Column(
-              children: [
-                
-                Text("Eros Lucagbo", style: TextStyle(fontSize: 60.sp, color: const Color.fromARGB(255, 255, 255, 255)),),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 180.h,
-          ),
-          Container(
-            padding: EdgeInsets.fromLTRB(40, 20, 40,10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
-               boxShadow: [
-                      BoxShadow(
-                        color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                        spreadRadius: 3,   // Extent of the shadow
-                        blurRadius: 10,    // Softness of the shadow
-                        offset: Offset(2, 6),
-                        // Horizontal and vertical offset
-                      ),
-                    ]
-            ),
-            child: Column(
-            spacing: 35.h,
+        padding: EdgeInsets.only(top: 540.h, left: 50.w, right: 40.w),
+        child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            Text("Account", style: TextStyle(fontSize: 50.sp, color: primaryColor)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  spacing: 20.w,
+              Center(
+                child: Column(
                   children: [
-                    Icon(Icons.person_2_rounded, color: primaryColor),
-                    Text("Personal Data", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w100),),
+                    Text(displayName?? "", style: TextStyle(fontSize: 60.sp, color: const Color.fromARGB(255, 255, 255, 255)),),
                   ],
                 ),
-                Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor,)
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  spacing: 20.w,
-                  children: [
-                    Icon(Icons.history, color: primaryColor),
-                    Text("Activity History", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w100),),
-                  ],
+              ),
+              SizedBox(
+                height: 160.h,
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(30, 20, 30,0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: [
+                          BoxShadow(
+                            color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                            spreadRadius: 3,   // Extent of the shadow
+                            blurRadius: 10,    // Softness of the shadow
+                            offset: Offset(2, 6),
+                            // Horizontal and vertical offset
+                          ),
+                        ]
                 ),
-                Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor,)
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  spacing: 20.w,
-                  children: [
-                    Icon(Icons.wallet, color: primaryColor),
-                    Text("Payment Method", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w100),),
-                  ],
-                ),
-                Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor,)
-              ],
-            ),
-            ]),
-          ),
-          SizedBox(
-            height: 50.h,
-          ),
-          Container(
-            padding: EdgeInsets.fromLTRB(40, 20, 40,10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
-               boxShadow: [
-                      BoxShadow(
-                        color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                        spreadRadius: 3,   // Extent of the shadow
-                        blurRadius: 10,    // Softness of the shadow
-                        offset: Offset(2, 6),
-                        // Horizontal and vertical offset
-                      ),
-                    ]
-            ),
-            child: Column(
-            spacing: 10.h,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            Text("Notification", style: TextStyle(fontSize: 50.sp, color: primaryColor)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  spacing: 20.w,
-                  children: [
-                    Icon(Icons.notifications_active_rounded, color: primaryColor),
-                    Text("Pop-Up Notification", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w100),),
-                  ],
-                ),
-                Switch(
-                activeColor: primaryColor,
-                splashRadius: 20,
-                value: isSwitch, onChanged:turnSwitch)
-              ],
-            )
-          ]),
-        ),
-        SizedBox(
-            height: 50.h,
-          ),
-        Container(
-            padding: EdgeInsets.fromLTRB(40, 20, 40,20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
-               boxShadow: [
-                      BoxShadow(
-                        color: Color.fromARGB(20, 0, 0, 0), // Shadow color
-                        spreadRadius: 3,   // Extent of the shadow
-                        blurRadius: 10,    // Softness of the shadow
-                        offset: Offset(2, 6),
-                        // Horizontal and vertical offset
-                      ),
-                    ]
-            ),
-            child: Column(
-            spacing: 35.h,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            Text("Other", style: TextStyle(fontSize: 50.sp, color: primaryColor)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  spacing: 20.w,
-                  children: [
-                    Icon(Icons.email, color: primaryColor),
-                    Text("Contact Us", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w100),),
-                  ],
-                ),
-                Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor,)
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+                child: Column(
+          
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                Text("Account", style: TextStyle(fontSize: 50.sp, color: primaryColor)),
                 TextButton(
-                  style: ButtonStyle(
-                    fixedSize: WidgetStatePropertyAll(Size(720.w, 0.h)),
-                    padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
-                    shape: WidgetStatePropertyAll(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(0)))),
+                  style: ButtonStyle(padding:WidgetStatePropertyAll(EdgeInsets.zero)),
                   onPressed: (){
-                    Navigator.pushNamedAndRemoveUntil(context, '/startup', (_) => false);
+                    widget.navigate(1);  
                   },
                   child: Row(
-                    spacing: 8.w,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.logout_outlined, color: primaryColor, size: 28,),
-                      Text("Sign Out", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400, fontSize: 40.sp),),
+                      Row(
+                        spacing: 20.w,
+                        children: [
+                          Icon(Icons.person_2_rounded, color: primaryColor, size: 30,),
+                          Text("Personal Data", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w500, fontSize: 40.sp),),
+                        ],
+                      ),
+                      Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor, size: 30,)
                     ],
                   ),
+                ),
+                TextButton(
+                  style: ButtonStyle(padding:WidgetStatePropertyAll(EdgeInsets.zero)),
+                  onPressed: (){
+                    widget.navigate(2);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        spacing: 20.w,
+                        children: [
+                          Icon(Icons.history, color: primaryColor, size: 30,),
+                          Text("Activity History", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w500, fontSize: 40.sp),),
+                        ],
+                      ),
+                      Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor,size: 30,)
+                    ],
+                  ),
+                ),
+                TextButton(
+                  style: ButtonStyle(padding:WidgetStatePropertyAll(EdgeInsets.zero)),
+                  onPressed: (){
+                    widget.navigate(3);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        spacing: 20.w,
+                        children: [
+                          Icon(Icons.wallet, color: primaryColor, size: 30,),
+                          Text("Payment Method", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w500, fontSize: 40.sp)),
+                        ],
+                      ),
+                      Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor,size: 30,)
+                    ],
+                  ),
+                ),
+                ]),
+              ),
+              SizedBox(
+                height: 30.h,
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(30, 20, 30,0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: [
+                          BoxShadow(
+                            color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                            spreadRadius: 3,   // Extent of the shadow
+                            blurRadius: 10,    // Softness of the shadow
+                            offset: Offset(2, 6),
+                            // Horizontal and vertical offset
+                          ),
+                        ]
+                ),
+                child: Column(
+                spacing: 10.h,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                Text("Notification", style: TextStyle(fontSize: 50.sp, color: primaryColor)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      spacing: 20.w,
+                      children: [
+                        Icon(Icons.notifications_active_rounded, color: primaryColor),
+                        Text("Pop-Up Notification", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w100),),
+                      ],
+                    ),
+                    Switch(
+                    activeColor: primaryColor,
+                    splashRadius: 20,
+                    value: isSwitch, onChanged:turnSwitch)
+                  ],
                 )
-              ],
+              ]),
             ),
-            ]),
+            SizedBox(
+                height: 30.h,
+              ),
+            Container(
+                padding: EdgeInsets.fromLTRB(30, 15, 30,0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: [
+                          BoxShadow(
+                            color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                            spreadRadius: 3,   // Extent of the shadow
+                            blurRadius: 10,    // Softness of the shadow
+                            offset: Offset(2, 6),
+                            // Horizontal and vertical offset
+                          ),
+                        ]
+                ),
+                child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                Text("Other", style: TextStyle(fontSize: 50.sp, color: primaryColor)),
+                TextButton(
+                  style: ButtonStyle(padding:WidgetStatePropertyAll(EdgeInsets.zero)),
+                  onPressed: (){},
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        spacing: 20.w,
+                        children: [
+                          Icon(Icons.email, color: primaryColor, size: 30,),
+                          Text("Contact Us", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w500, fontSize: 30.sp),),
+                        ],
+                      ),
+                      Icon(Icons.keyboard_arrow_right_rounded, color: primaryColor, size: 30,)
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      style: ButtonStyle(
+                        fixedSize: WidgetStatePropertyAll(Size(720.w, 0.h)),
+                        padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                        shape: WidgetStatePropertyAll(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(0)))),
+                      onPressed: ()async{
+                        await AuthenticationService.signOut();
+                        Navigator.pushNamedAndRemoveUntil(context, '/startup', (_) => false);
+                      },
+                      child: Row(
+                        spacing: 8.w,
+                        children: [
+                          Icon(Icons.logout_outlined, color: primaryColor, size: 28,),
+                          Text("Sign Out", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w400, fontSize: 40.sp),),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                ]),
+              ),
+          
+            ],
           ),
+      );
+     
+  }
+}
 
 
-        
+class PersonalData extends StatefulWidget {
+  final Function(int) navigate;
+  const PersonalData({super.key, required this.navigate });
 
+  @override
+  State<PersonalData> createState() => _PersonalDataState();
+}
 
+class _PersonalDataState extends State<PersonalData> {
+  TextEditingController usernameController = TextEditingController(text: AuthenticationService.displayName?? "");
+  TextEditingController emailController = TextEditingController(text: AuthenticationService.email?? "");
+  TextEditingController newPass = TextEditingController();
+ 
 
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose(); // Always dispose controllers!
+    super.dispose();
+  }
+  
+  bool isReset = false;
+  bool isVisible = false;
+  bool isEdit = false;
 
+  bool checkChanges(){
+    final String originalUsername =  AuthenticationService.displayName?? "";
+    final String originalEmail = AuthenticationService.email?? "";
 
+    if(isReset) return true;
+    if(( usernameController.text.trim() == originalUsername|| emailController.text.trim() == originalEmail) && !isEdit){
+       return false;
+    }
+    return true;
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top:540.h, left: 50.w, right: 40.w),
+      child: Column(
+        children: [
+          Text(AuthenticationService.displayName?? "", style: TextStyle(fontSize: 60.sp, color: const Color.fromARGB(255, 255, 255, 255)),),
+          Center(
+            child: Padding(
+              padding:EdgeInsets.only(top:200.h, left: 50.w, right: 40.w),
+              child: Container(
+                      padding: EdgeInsets.fromLTRB(40, 20, 40,10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                         boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromARGB(20, 0, 0, 0), // Shadow color
+                                  spreadRadius: 3,   // Extent of the shadow
+                                  blurRadius: 10,    // Softness of the shadow
+                                  offset: Offset(2, 6),
+                                  // Horizontal and vertical offset
+                                ),
+                              ]
+                      ),
+                      child: Column(
+                      spacing: 35.h,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                      Text("Personal Data", style: TextStyle(color: primaryColor, fontSize: 50.sp),),
+                      TextField(
+                        readOnly: !isEdit,
+                        controller: usernameController,
+                        keyboardType:TextInputType.text,
+                        decoration: InputDecoration(
+                          labelText: "Username",
+                          suffixIcon: IconButton(
+                            onPressed: (){
+                              setState(() {
+                                isEdit = true;
+                              });
+                            },
+                            icon: Icon(Icons.edit, color: primaryColor, size: 30),
+                          ),
+              
+                        ),
+                      ),
+                      TextField(
+                        readOnly: !isEdit,
+                        controller: emailController,
+                        keyboardType:TextInputType.text,
+                        decoration: InputDecoration(
+                          labelText: "Email",
+                          suffixIcon: IconButton(
+                            onPressed: (){
+                              setState(() {
+                                isEdit = true;
+                              });
+                            },
+                            icon: Icon(Icons.edit, color: primaryColor, size: 30),
+                          ),
+              
+                        ),
+                      ),
+    
+                      isReset?
+                      TextField(
+                        controller: newPass,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          
+                          labelText: "New Password",
+                          suffixIcon: IconButton(
+                            onPressed: (){
+                              setState(() {
+                                isVisible = false;
+                              });
+                            }, 
+                            icon: isVisible? Icon(Icons.visibility): Icon(Icons.visibility_off)
+                          )
+                        ),
+                        obscureText: isVisible,
+                      )
+                      :
+                      TextButton(
+                        style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.zero)),
+                        onPressed: (){
+                          setState(() {
+                            isReset = true;
+                          });
+                        }, 
+                        child: Row(
+                          spacing: 20.w,
+                          children: [
+                            Icon(Icons.settings, color: primaryColor,),
+                            Text("Reset Password", style: TextStyle(color: primaryColor),)
+                          ],
+                        )),
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: (){
+                              widget.navigate(0);
+                            }, 
+                            child: Text("Back", style: TextStyle(color: primaryColor, fontSize: 40.sp))
+                          ),
+                          TextButton(
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(checkChanges() ? primaryColor : Colors.black45)
+                            ),
+                            onPressed: checkChanges() ? () async{
+                              bool reauth = await AuthenticationService.reauthenticateWithDialog(context);
+                              if(reauth) {
+                                bool isSucces = await AuthenticationService.updateCredentials(
+                                  newEmail: emailController.text.trim(), 
+                                  newPassword: newPass.text.trim(),
+                                  newDisplayName: usernameController.text.trim()
+                                );
 
+                                if(isSucces){
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Credentials updated successfully!"), backgroundColor: Colors.green,)
+                                  );
+                                  setState(() {
+                                    isEdit = false;
+                                    isReset = false;
+                                    isVisible = false;
+                                  });
+                                }
+
+                                else{
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Failed to update credentials."), backgroundColor: Colors.red,)
+                                  );
+                                }
+                              }
+                            }:null, 
+                            child: Text("Save", style: TextStyle(color:  checkChanges() ?  Colors.white :Colors.black ),)
+                          )
+                        ],
+                      )
+                      ]),
+                    ),
+            ),
+          ),
         ],
       ),
     );
+          
   }
 }
+
+
+class ActivityHistory extends StatefulWidget {
+  const ActivityHistory({super.key});
+
+  @override
+  State<ActivityHistory> createState() => _ActivityHistoryState();
+}
+
+class _ActivityHistoryState extends State<ActivityHistory> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+
+class PaymentMethod extends StatefulWidget {
+  const PaymentMethod({super.key});
+
+  @override
+  State<PaymentMethod> createState() => _PaymentMethodState();
+}
+
+class _PaymentMethodState extends State<PaymentMethod> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
