@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/database.dart';
 import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 
 class AuthenticationService {
@@ -9,6 +10,7 @@ class AuthenticationService {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       await userCredential.user?.updateDisplayName(username);
+      await DatabaseService(user: userCredential.user).initializeDB();
       return null;
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -31,6 +33,7 @@ class AuthenticationService {
 
   static String? get displayName => _auth.currentUser?.displayName;
   static String? get email => _auth.currentUser?.email;
+  static User? get currentUser => _auth.currentUser;
 
   static Future<bool> updateCredentials({
     String? newEmail,

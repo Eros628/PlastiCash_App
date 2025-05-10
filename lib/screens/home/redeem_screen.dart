@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_finalprojects/screens/home/home_screen.dart';
@@ -21,7 +22,10 @@ List<RedeemableRewards> reedemableRewards = [
 
 
 class RedeemScreen extends StatefulWidget {
-  const RedeemScreen({super.key});
+  final Function(int) onNavigate;
+  final int points;
+
+  const RedeemScreen({super.key, required this.onNavigate, required this.points});
 
   @override
   State<RedeemScreen> createState() => _RedeemScreenState();
@@ -30,12 +34,13 @@ class RedeemScreen extends StatefulWidget {
 class _RedeemScreenState extends State<RedeemScreen> {
   @override
   Widget build(BuildContext context) {
-    return goToRedeem? Scaffold(
+    return  Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
       floatingActionButton: IconButton(onPressed: (){
         setState(() {
           goToRedeem = false;
         });
+        widget.onNavigate(3);
       }, icon: Icon(Icons.arrow_back), color:Colors.white, iconSize: 40,),
       body:  
       SingleChildScrollView(
@@ -71,7 +76,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                             decoration: BoxDecoration(color: Colors.transparent, border: Border.all(color: primaryColor, width: 3), shape: BoxShape.circle),
                             child: Padding(
                               padding: EdgeInsets.all(90.h),
-                              child: Text("0\nPoints", style: TextStyle(color: primaryColor, fontSize: 60.sp),textAlign: TextAlign.center),
+                              child: Text("${widget.points}\nPoints", style: TextStyle(color: primaryColor, fontSize: 60.sp),textAlign: TextAlign.center),
                             ),
                           ),
                         ),
@@ -163,6 +168,6 @@ class _RedeemScreenState extends State<RedeemScreen> {
         ),
       )
       
-    ):  RewardsScreen();
+    );
   }
 }

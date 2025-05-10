@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/database.dart';
 import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
-import 'package:flutter_finalprojects/screens/home/aboutus_screen.dart';
 import 'package:flutter_finalprojects/screens/home/map_screen.dart';
 import 'package:flutter_finalprojects/screens/home/reward_screen.dart';
 import 'package:flutter_finalprojects/screens/home/profile_screen.dart';
@@ -9,15 +10,15 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
-
-const Color primaryColor =  Color.fromARGB(255, 27, 75, 61);
 final LatLng bugoCoords = LatLng(8.5003, 124.7824);
-
 final bugoMarker = Marker(
   point: LatLng(8.5003, 124.7824), // Bugo, CDO
   child: Image.asset('assets/logoIcon.png') );
+
+const Color primaryColor =  Color.fromARGB(255, 27, 75, 61);
 
 
 class HomePage extends StatefulWidget {
@@ -27,9 +28,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   int _currentIndex = 0;
   bool isChangeColor = false;
-  Widget _buildHomeContent() {
+  
+  @override
+  void initState() {
+  super.initState();
+
+}
+
+  Widget _buildHomeContent(List<QueryDocumentSnapshot<Map<String, dynamic>>> userActivity) {
     return SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Column(
@@ -41,7 +50,7 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.horizontal(left: Radius.circular(65), right: Radius.zero),
               ),
               height: 967.h,
-              child: Column(children: [Div1(), Div2(onNavigate: (int newIndex){
+              child: Column(children: [Div1(), Div2(userActivity: userActivity, onNavigate: (int newIndex){
                 setState(() {
                   _currentIndex = newIndex;
                 });
@@ -65,21 +74,6 @@ class _HomePageState extends State<HomePage> {
       );
   }
 
-   List<Widget> get _screens => [
-    _buildHomeContent(),
-    MapScreen(),
-    QrScanner(),
-    RewardsScreen(),
-    ProfileScreen(onNavigate: (int newIndex){
-      setState(() {
-        _currentIndex = newIndex;
-      });
-    }, isChangeColor: (bool newChangeColor){
-        setState(() {
-          isChangeColor = newChangeColor;
-        });
-    }),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +81,46 @@ class _HomePageState extends State<HomePage> {
       resizeToAvoidBottomInset: false,
       extendBody: true,
       backgroundColor: Colors.white ,
-      body: _screens[_currentIndex],
+      body:  StreamBuilder
+      (
+        stream: DatabaseService(user: AuthenticationService.currentUser).getUserClaimActivity, 
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if(snapshot.hasError){
+            return Center(child: Text("Error:${snapshot.error}", style: TextStyle(color: primaryColor)));
+          }
+
+          if(!snapshot.hasData){
+            return Center(child: Text("No Data Found", style: TextStyle(color: primaryColor)));
+          }
+
+     
+          final userActivity= snapshot.data!.docs;
+        
+          List<Widget> screens = [
+            _buildHomeContent(userActivity),
+            MapScreen(),
+            QrScanner(),
+            RewardsScreen(userAct: userActivity, onNavigate: (int newIndex){
+              setState(() {
+                _currentIndex = newIndex;
+              });
+            },),
+            ProfileScreen(userActivity: userActivity,onNavigate: (int newIndex){
+              setState(() {
+                _currentIndex = newIndex;
+              });
+            }, isChangeColor: (bool newChangeColor){
+                setState(() {
+                  isChangeColor = newChangeColor;
+                });
+            }),
+          ];
+          return  screens[_currentIndex];
+        }),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
         onTap: (value) {
@@ -123,7 +156,7 @@ class Div1 extends StatefulWidget
 }
 
 class _Div1State extends State<Div1> {
-
+  
   final String? displayName =  AuthenticationService.displayName;
   @override
   Widget build(BuildContext context) {
@@ -147,14 +180,41 @@ class _Div1State extends State<Div1> {
 
 class Div2 extends StatefulWidget
 {
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> userActivity;
   final Function(int) onNavigate;
-  const Div2({super.key, required this.onNavigate});
+  const Div2({super.key, required this.onNavigate, required this.userActivity});
 
   @override
   State<Div2> createState() => _Div2State();
 }
 
 class _Div2State extends State<Div2> {
+  late List<QueryDocumentSnapshot<Map<String, dynamic>>> userAct;
+  int totalBottleToday = 0;
+  int totalBottleMonthly = 0;
+  
+ 
+  @override
+    void initState(){
+    super.initState();
+    userAct = widget.userActivity;
+
+    getbottle();
+    
+  }
+
+  Future<void> getbottle () async{
+    int totalnumber = await DatabaseService().getTodayBottle(userAct);
+    int totalBottleMonth = await DatabaseService().getmonthBottle(userAct);
+    setState(() {
+      totalBottleToday = totalnumber;
+      totalBottleMonthly = totalBottleMonth;
+    });
+  }
+  
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -180,11 +240,11 @@ class _Div2State extends State<Div2> {
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             spacing: 8,
-                            children: [Text("Today", style: TextStyle(fontWeight: FontWeight.normal)),Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("3 Bottles", style: TextStyle(fontSize: 40.sp))])]),
+                            children: [Text("Today", style: TextStyle(fontWeight: FontWeight.normal)),Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("$totalBottleToday Bottles", style: TextStyle(fontSize: 40.sp))])]),
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             spacing: 8,
-                            children: [Text("This Month",style: TextStyle(fontWeight: FontWeight.normal)), Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("26 Bottles",style: TextStyle(fontSize: 40.sp))])])
+                            children: [Text("This Month",style: TextStyle(fontWeight: FontWeight.normal)), Row(children: [Icon(Icons.arrow_upward_sharp, color: Colors.white,), Text("$totalBottleMonthly Bottles",style: TextStyle(fontSize: 40.sp))])])
                       ]),
                 )
               ]
@@ -197,6 +257,7 @@ class _Div2State extends State<Div2> {
 
 
 class Div3 extends StatefulWidget {
+
   final ValueChanged<int> onNavigate;
   const Div3({super.key, required this.onNavigate});
 
@@ -220,6 +281,7 @@ class _Div3State extends State<Div3> {
 
 
 class Div3MapSection extends StatefulWidget {
+  
   final ValueChanged<int> onNavigate;  // Callback for navigation
 
   const Div3MapSection({super.key, required this.onNavigate});
@@ -331,25 +393,47 @@ class _MilestoneSectionState extends State<MilestoneSection> {
           ),
         Padding(
           padding: EdgeInsets.only(left: 50.w, right: 50.w),
-          child: ListView.builder(
-            padding: EdgeInsets.only(top: 0),
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: 2,
-            itemBuilder: (context, index){
-              return ChallengesCard(
-                text: challenges[index].text, 
-                progress: challenges[index].progress , 
-                points: challenges[index].points, 
-                onClaim: (){
-                  setState(() {
-                    challenges.removeAt(index);
-                  });
-                },
-                index: index,
-                color: challenges[index].color, 
-              );
-          }),
+          child:StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: DatabaseService().getTasks,
+            builder: (context, snapshot) {
+               if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No tasks found.'));
+                }
+
+                List<QueryDocumentSnapshot<Map<String, dynamic>>> sortedDocs =
+                  List.from(snapshot.data!.docs);
+                sortedDocs.sort((a, b) {
+                  double progressA = (a.data()["Progress"] ?? 0).toDouble();
+                  double progressB = (b.data()["Progress"] ?? 0).toDouble();
+                  return progressB.compareTo(progressA); // descending order
+                });
+              return ListView.builder(
+                padding: EdgeInsets.only(top: 0),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  var data = sortedDocs[index].data();
+                  return ChallengesCard(
+                    text: data["Goal_Description"],
+                    progress: (data["Progress"] as num).toDouble() ,
+                    points: data["Points"],
+                    onClaim: () {
+                      setState(() {});
+                    },
+                    index: index,
+                    color: Colors.green);
+              });
+            }
+          ),
         ),
       ]);
   } 

@@ -31,10 +31,6 @@ class PlastiCashApp extends StatelessWidget{
         theme: ThemeData(textTheme: TextTheme(bodyMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "Poppins"))),
         debugShowCheckedModeBanner: false,
         title: "PlastiCash",
-        /*routes: {
-           '/home': (context) => HomePage()
-        },
-        */
         initialRoute: '/startup',
 
         onGenerateRoute: (settings) {

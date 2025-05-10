@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
 import '../startup_screen.dart';
@@ -13,7 +12,6 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  
   
   final TextEditingController email = TextEditingController();
   final TextEditingController pass = TextEditingController();
@@ -51,9 +49,9 @@ class _SignupScreenState extends State<SignupScreen> {
       isLoading = true;
     });
 
-    final emailErr    = validateEmail(email.text);
-    final passErr     = validatePassword(pass.text);
-    final userErr     = validateUsername(username.text);
+    final emailErr = validateEmail(email.text);
+    final passErr = validatePassword(pass.text);
+    final userErr  = validateUsername(username.text);
 
 
 
@@ -63,12 +61,11 @@ class _SignupScreenState extends State<SignupScreen> {
       _errorTextPass= passErr;
       _errorTextUsername = userErr;
     });
-    
+
     if (emailErr != null || passErr != null || userErr != null){ 
       setState(() {
         isLoading = false;
       });
-      
       return;}
 
     // All client validations passed → call Firebase
@@ -83,7 +80,7 @@ class _SignupScreenState extends State<SignupScreen> {
       isLoading = false;
     });
   
-
+  
     // handle any remaining Firebase errors
     if (firebaseErr != null) {
       setState(() {
@@ -93,8 +90,6 @@ class _SignupScreenState extends State<SignupScreen> {
       });
       return;
   }
-
-  
 
   // success!
   if (!mounted) return;

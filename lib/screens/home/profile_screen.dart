@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/database.dart';
 import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
 import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,9 +11,10 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 
 class ProfileScreen extends StatefulWidget {
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> userActivity;
   final void Function(bool) isChangeColor;
   final Function(int) onNavigate;
-  const ProfileScreen({super.key, required this.onNavigate, required this.isChangeColor});
+  const ProfileScreen({super.key, required this.onNavigate, required this.isChangeColor, required this.userActivity});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -25,14 +28,22 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
   late Animation<Offset> _secondOffset;
   bool showFirst = true;
 
+  late List<QueryDocumentSnapshot<Map<String, dynamic>>> userAct;
+  int totalPoints = 0;
+  int totalRecyled = 0;
+  int totalBottleToday = 0;
+  int totalBottleMonthly = 0;
+  
+
   @override
   void initState() {
     super.initState();
+    userAct = widget.userActivity;
     _controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 400),
     );
-
+    setData();
     _setAnimations();
   }
 
@@ -58,8 +69,24 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     setState(() {
       showFirst = !showFirst;
     });
+
+  
   }
  
+  Future<void> setData() async{
+    int getPoints = await DatabaseService().getTotalPoints(userAct);
+    int getRecyled = await DatabaseService().getTotalBottle(userAct);
+    int getTodayBottle= await DatabaseService().getTodayBottle(userAct);
+    int getMonthBottle = await DatabaseService().getmonthBottle(userAct);
+
+    setState(() {
+      totalPoints = getPoints;
+      totalRecyled = getRecyled;
+      totalBottleToday = getTodayBottle;
+      totalBottleMonthly = getMonthBottle;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -137,9 +164,9 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Text("1324 \nPoints", style: TextStyle(color: primaryColor, fontSize: 50.sp),textAlign: TextAlign.center,),
+                                    Text("$totalPoints \nPoints", style: TextStyle(color: primaryColor, fontSize: 50.sp),textAlign: TextAlign.center,),
                                     Text("|", style: TextStyle(fontWeight: FontWeight.w100, fontSize: 150.sp, color:Colors.black45),),
-                                    Text("1324 \nRecycled", style: TextStyle(color: primaryColor,fontSize: 50.sp), textAlign: TextAlign.center,)
+                                    Text("$totalRecyled \nRecycled", style: TextStyle(color: primaryColor,fontSize: 50.sp), textAlign: TextAlign.center,)
                                   ],
                                 ),
                               ),
@@ -199,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                                         Column(
                                                           crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
-                                                            Text("0", style: TextStyle(color:primaryColor, fontSize: 50.sp),),
+                                                            Text("$totalBottleToday", style: TextStyle(color:primaryColor, fontSize: 50.sp),),
                                                             Text("TODAY", style: TextStyle(color: Colors.grey, fontSize: 30.sp),)
                                                           ],
                                                         )
@@ -221,7 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                                         Column(
                                                           crossAxisAlignment: CrossAxisAlignment.start,
                                                           children: [
-                                                            Text("0", style: TextStyle(color:primaryColor, fontSize: 50.sp),),
+                                                            Text("$totalBottleMonthly", style: TextStyle(color:primaryColor, fontSize: 50.sp),),
                                                             Text("THIS MONTH", style: TextStyle(color: Colors.grey, fontSize: 30.sp),)
                                                           ],
                                                         )
@@ -271,7 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                   ),
                                 ]),
                                                             
-                                child: WeeklyActivity() )
+                                child: WeeklyActivity( userAct: widget.userActivity,) )
                                 ],
                               ),
                             ),
@@ -298,7 +325,8 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
 
 
 class WeeklyActivity extends StatefulWidget {
-  const WeeklyActivity({super.key});
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> userAct;
+  const WeeklyActivity({super.key, required this.userAct});
 
   @override
   State<WeeklyActivity> createState() => _WeeklyActivityState();
@@ -308,6 +336,30 @@ class WeeklyActivity extends StatefulWidget {
 
 
 class _WeeklyActivityState extends State<WeeklyActivity> {
+  List<double> day = [0,0,0,0,0,0,0];
+  final int bottleMax = 50;
+
+
+  @override
+  void initState(){
+    super.initState();
+    getWeekAct();
+  }
+
+  Future<void> getWeekAct()async{
+    final getWeekAct = await DatabaseService().getWeeklyActivity(widget.userAct);
+    setState(() {
+      day =  getWeekAct.map((e) => e.toDouble()).toList();
+      print(day);
+      for(int i = 0; i<day.length;i++ ){
+        if(day[i] != 0){
+          day[i] = (day[i] / bottleMax);
+        }
+          
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return  Row(
@@ -327,7 +379,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: 0.3,
+                                                  value: day[1],
                                                   backgroundColor: Colors.grey[300],
                                                   color: Color.fromRGBO(58, 192, 153, 1),
                                                   minHeight: 20,
@@ -348,7 +400,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: 0.5,
+                                                  value: day[0],
                                                   backgroundColor: Colors.grey[300],
                                                   color: primaryColor,
                                                   minHeight: 20,
@@ -368,7 +420,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: 0.8,
+                                                  value: day[1],
                                                   backgroundColor: Colors.grey[300],
                                                   color: Color.fromRGBO(58, 192, 153, 1),
                                                   minHeight: 20,
@@ -388,7 +440,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: 0.9,
+                                                  value: day[2],
                                                   backgroundColor: Colors.grey[300],
                                                   color: primaryColor,
                                                   minHeight: 20,
@@ -408,7 +460,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: 0.6,
+                                                  value: day[3],
                                                   backgroundColor: Colors.grey[300],
                                                   color: Color.fromRGBO(58, 192, 153, 1),
                                                   minHeight: 20,
@@ -428,7 +480,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: 0.8,
+                                                  value: day[4],
                                                   backgroundColor: Colors.grey[300],
                                                   color: primaryColor,
                                                   minHeight: 20,
@@ -448,7 +500,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: 0.4,
+                                                  value: day[5],
                                                   backgroundColor: Colors.grey[300],
                                                   color: Color.fromRGBO(58, 192, 153, 1),
                                                   minHeight: 20,
@@ -672,7 +724,6 @@ class _MoreProfileState extends State<MoreProfile>{
                         shape: WidgetStatePropertyAll(ContinuousRectangleBorder(borderRadius: BorderRadius.circular(0)))),
                       onPressed: ()async{
                         await AuthenticationService.signOut();
-                        Navigator.pushNamedAndRemoveUntil(context, '/startup', (_) => false);
                       },
                       child: Row(
                         spacing: 8.w,

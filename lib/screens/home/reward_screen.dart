@@ -1,35 +1,51 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_finalprojects/database.dart';
+import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
 import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'redeem_screen.dart';
 
 
-List <Challenges> challenges = [
-    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 1.0, color: Color.fromRGBO(144, 202, 249, 1)),
-    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 0.0, color: primaryColor),
-    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 0.0, color: Color.fromRGBO(187, 213, 191, 1)),
-    Challenges(text: "Recycle 5 kg of plastic", points: "15 Points", progress: 0.0, color: Color.fromRGBO(0, 0, 0, 0.541) ),
-];
 
 List<Challenges> earned = [];
 bool goToRedeem = false;
 
 
 class RewardsScreen extends StatefulWidget {
-  const RewardsScreen({super.key});
+  final Function(int) onNavigate;
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> userAct;
+  const RewardsScreen({super.key, required this.userAct, required this.onNavigate});
 
   @override
   State<RewardsScreen> createState() => _RewardsScreenState();
 }
 
 class _RewardsScreenState extends State<RewardsScreen> {
-  
+  int totalPoints = 0;
   bool iSEarned = false;
   
+
+  @override
+    void initState(){
+    super.initState();
+
+    getpoints();
+    
+  }
+
+  Future<void> getpoints () async{
+    int getTotalPoints = await DatabaseService().getTotalPoints(widget.userAct);
+    setState(() {
+     totalPoints = getTotalPoints;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: goToRedeem? RedeemScreen() : Column(
+      body: goToRedeem? RedeemScreen(onNavigate: widget.onNavigate, points: totalPoints) : Column(
         children: [
           Container(
             height: 800.h,
@@ -65,7 +81,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
                               decoration: BoxDecoration(color: Colors.transparent, border: Border.all(color: primaryColor, width: 3), shape: BoxShape.circle),
                               child: Padding(
                                 padding: EdgeInsets.all(90.h),
-                                child: Text("0\nPoints", style: TextStyle(color: primaryColor, fontSize: 60.sp),textAlign: TextAlign.center),
+                                child: Text("$totalPoints\nPoints", style: TextStyle(color: primaryColor, fontSize: 60.sp),textAlign: TextAlign.center),
                               ),
                             ),
                           ),
@@ -355,27 +371,46 @@ class _RewardsState extends State<Rewards> {
         ),
         Padding(
           padding: EdgeInsets.only(left: 70.w, right: 70.w),
-          child: ListView.builder(
-            padding: EdgeInsets.only(top: 0),
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: challenges.length,
-            itemBuilder: (context, index){
-              return ChallengesCard(
-                text: challenges[index].text, 
-                progress: challenges[index].progress , 
-                points: challenges[index].points, 
-                onClaim: (){
-                  setState(() {
-                    challenges.removeAt(index);
-                    earned.add(challenges[index]);
-                  });
-                },
-                index: index,
-                color: challenges[index].color,
-                
-                );
-          }),
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: DatabaseService().getTasks,
+            builder: (context, snapshot) {
+               if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No tasks found.'));
+                }
+              List<QueryDocumentSnapshot<Map<String, dynamic>>> sortedDocs =
+                  List.from(snapshot.data!.docs);
+                sortedDocs.sort((a, b) {
+                  double progressA = (a.data()["Progress"] ?? 0).toDouble();
+                  double progressB = (b.data()["Progress"] ?? 0).toDouble();
+                  return progressB.compareTo(progressA); // descending order
+                });
+              return ListView.builder(
+                padding: EdgeInsets.only(top: 0),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: sortedDocs.length,
+                itemBuilder: (context, index) {
+                  var data = sortedDocs[index].data();
+                  return ChallengesCard(
+                    text: data["Goal_Description"],
+                    progress: (data["Progress"] as num?)?.toDouble() ?? 0,
+                    points: data["Points"],
+                    onClaim: () {
+                      setState(() {});
+                    },
+                    index: index,
+                    color: Colors.green);
+              });
+            }
+          ),
         ),
         SizedBox(
           height: 220.h,
@@ -390,7 +425,7 @@ class _RewardsState extends State<Rewards> {
 class ChallengesCard extends StatefulWidget {
   final String text;
   final double progress;
-  final String points;
+  final int points;
   final Color color;
   final int index;
   final VoidCallback onClaim;
@@ -455,7 +490,7 @@ class _ChallengesState extends State<ChallengesCard> {
                                 child: Text("Claim", style: TextStyle(fontSize: 40.sp, color: Colors.white),),
                           )
                         ),
-                        Text(widget.points, style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)
+                        Text("${widget.points} Points", style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)
                       ],
                     )
                   ])
