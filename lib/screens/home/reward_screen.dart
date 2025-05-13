@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/database.dart';
-import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
+import 'package:flutter_finalprojects/services/database.dart';
+import 'package:flutter_finalprojects/services/authentication_service.dart';
 import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'redeem_screen.dart';
@@ -161,6 +161,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
   }
 }
 
+bool isActivate = false;
 class Challenges{
   late final String text;
   late final String points;
@@ -371,45 +372,71 @@ class _RewardsState extends State<Rewards> {
         ),
         Padding(
           padding: EdgeInsets.only(left: 70.w, right: 70.w),
-          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: DatabaseService().getTasks,
+          child: StreamBuilder<Map<String, QuerySnapshot<Map<String, dynamic>>>>(
+            stream: DatabaseService(user: AuthenticationService.currentUser).getTasks,
             builder: (context, snapshot) {
-               if (snapshot.connectionState == ConnectionState.waiting) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
-                }
+              }
 
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No tasks found.'));
-                }
-              List<QueryDocumentSnapshot<Map<String, dynamic>>> sortedDocs =
-                  List.from(snapshot.data!.docs);
-                sortedDocs.sort((a, b) {
-                  double progressA = (a.data()["Progress"] ?? 0).toDouble();
-                  double progressB = (b.data()["Progress"] ?? 0).toDouble();
-                  return progressB.compareTo(progressA); // descending order
-                });
+              if (!snapshot.hasData || snapshot.data!['tasks']!.docs.isEmpty) {
+                return Center(child: Text('No tasks found.'));
+              }
+
+              final tasks = snapshot.data!['tasks']!.docs;
+              final progressDocs = snapshot.data!['progress']!.docs;
+
+              // Create a map from progress doc IDs to their data
+              final progressMap = {
+                for (var doc in progressDocs) doc.id: doc.data()
+              };
+
+              // Combine task with its progress data
+              final combined = tasks.map((taskDoc) {
+                final progress = progressMap[taskDoc.id] ?? {};
+                return {
+                  'taskDoc': taskDoc,
+                  'progress': progress,
+                  'status': progress['status'] ?? '',
+                };
+              }).toList();
+
+              // Sort: Active status first
+              combined.sort((a, b) {
+                final statusA = a['status'] == 'Active' ? 1 : 0;
+                final statusB = b['status'] == 'Active' ? 1 : 0;
+                return statusB.compareTo(statusA); // active ones on top
+              });
+
               return ListView.builder(
                 padding: EdgeInsets.only(top: 0),
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: sortedDocs.length,
+                itemCount: combined.length,
                 itemBuilder: (context, index) {
-                  var data = sortedDocs[index].data();
+                  final taskDoc = combined[index]['taskDoc'] as QueryDocumentSnapshot<Map<String, dynamic>>;
+                  final progress = combined[index]['progress'] as Map<String, dynamic>;
+                  final status = combined[index]['status'] as String;
+
                   return ChallengesCard(
-                    text: data["Goal_Description"],
-                    progress: (data["Progress"] as num?)?.toDouble() ?? 0,
-                    points: data["Points"],
+                    taskid: taskDoc.id,
+                    text: taskDoc.data()["Goal_Description"],
+                    progress: (progress["progress"] as num?)?.toDouble() ?? 0,
+                    points: taskDoc.data()["Points"],
                     onClaim: () {
                       setState(() {});
                     },
                     index: index,
-                    color: Colors.green);
-              });
-            }
+                    color: status == "Active" ? Colors.green : Colors.grey,
+                    status: status,
+                  );
+                },
+              );
+            },
           ),
         ),
         SizedBox(
@@ -423,13 +450,15 @@ class _RewardsState extends State<Rewards> {
 
 
 class ChallengesCard extends StatefulWidget {
+  final String taskid;
   final String text;
   final double progress;
+  final String status;
   final int points;
   final Color color;
   final int index;
   final VoidCallback onClaim;
-  const ChallengesCard({super.key, required this.text, required this.progress, required this.points, required this.onClaim, required this.index, required this.color});
+  const ChallengesCard({super.key, required this.taskid, required this.text, required this.progress, required this.points, required this.onClaim, required this.index, required this.color, required this.status});
 
   @override
   State<ChallengesCard> createState() => _ChallengesState();
@@ -463,7 +492,7 @@ class _ChallengesState extends State<ChallengesCard> {
                       child: LinearProgressIndicator(
                         value:widget.progress,
                         backgroundColor: Colors.grey,
-                        color: Colors.green,
+                        color:Colors.grey,
                         minHeight: 5,
                       ),
                     ),
@@ -472,22 +501,40 @@ class _ChallengesState extends State<ChallengesCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          style: ButtonStyle(backgroundColor: widget.progress== 1.0 ? WidgetStatePropertyAll(primaryColor) : WidgetStatePropertyAll((Colors.black54)),shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))),
-                          onPressed: (){
-                            if (widget.progress == 1.0){
+                          style: ButtonStyle(backgroundColor: widget.status == "Active" ? ( widget.progress== 1.0 ? WidgetStatePropertyAll(primaryColor) : WidgetStatePropertyAll((Colors.black54))): WidgetStatePropertyAll(primaryColor),shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))))),
+                          onPressed: () async{
+                            if(widget.status == "Inactive"){
+                              if(await DatabaseService(user: AuthenticationService.currentUser).isNoActive()){
+                                setState(() {
+                                  DatabaseService(user: AuthenticationService.currentUser).updateTask("Active", widget.taskid);
+                                });
+                              }
+                              else{
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Finish your current task \nbefore you can activate a new one", style: TextStyle(fontSize: 40.sp),)
+                                )
+                              );
+                              }
+                                
+                            }
+                            else{
+                               if (widget.progress == 1.0){
                                 widget.onClaim();
                             }
                             else{
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text("Complete the challenge first to earn your points.", style: TextStyle(fontSize: 30.sp),)
+                                  content: Text("Complete the challenge first to earn your points.", style: TextStyle(fontSize: 40.sp),)
                                 )
                               );
                             }
+                            }
+                           
                           }, 
                           child:Padding(
                               padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 0, bottom: 0),
-                                child: Text("Claim", style: TextStyle(fontSize: 40.sp, color: Colors.white),),
+                                child: Text(widget.status == "Active" ? "Claim":"Activate" , style: TextStyle(fontSize: 40.sp, color: Colors.white),),
                           )
                         ),
                         Text("${widget.points} Points", style: TextStyle(fontSize: 40.sp, color:Color.fromARGB(255, 64, 64, 64), fontStyle: FontStyle.italic),)

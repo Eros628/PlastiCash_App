@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/database.dart';
-import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
+import 'package:flutter_finalprojects/services/database.dart';
+import 'package:flutter_finalprojects/services/authentication_service.dart';
 import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_finalprojects/screens/startup_screen.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+
 
 
 
@@ -379,7 +379,7 @@ class _WeeklyActivityState extends State<WeeklyActivity> {
                                                 quarterTurns: -1, // Rotate 90 degrees counter-clockwise
                                                 child: LinearProgressIndicator(
                                                   borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(15)),
-                                                  value: day[1],
+                                                  value: day[6],
                                                   backgroundColor: Colors.grey[300],
                                                   color: Color.fromRGBO(58, 192, 153, 1),
                                                   minHeight: 20,

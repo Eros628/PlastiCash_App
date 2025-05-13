@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter_finalprojects/services/database.dart';
+import 'package:flutter_finalprojects/services/authentication_service.dart';
+import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -12,45 +16,120 @@ class QrScanner extends StatefulWidget {
 
 class _QrScannerState extends State<QrScanner> {
   final MobileScannerController controller = MobileScannerController(
-    detectionSpeed: DetectionSpeed.normal,
+    detectionSpeed: DetectionSpeed.noDuplicates,
     facing: CameraFacing.back,
 
     
   );
 
-  void _handleBarcode(BarcodeCapture capture) {
+  Future<bool> verifyQrCode(String data) async {
+    String signature_2 = "PlastiCash-2025-OLJD";
+    final decoded = jsonDecode(data);
+    final datamap = decoded['data'];
+    final signature = decoded['signature'];
+
+    final dataString = jsonEncode(datamap);
+    final hmac = Hmac(sha256, utf8.encode(signature_2));
+
+    final digest = hmac.convert(utf8.encode(dataString)).toString();
+
+    if(signature == digest) {
+
+      return true;
+    }
+    else{
+      return false;
+    }
+    
+  }
+
+   void _handleBarcode(BarcodeCapture capture) async{
+    final String action = "ScanQr";
     for (final barcode in capture.barcodes) {
       final String? value = barcode.rawValue;
+      try{
+          if (value != null && mounted) {
 
-      if (value != null && mounted) {
-        debugPrint('Scanned value: $value');
+            if( await verifyQrCode(value)){
+            final decoded = jsonDecode(value);
+            final datamap = decoded['data'];
+            // Stop the scanner to prevent multiple detections
 
-        // Stop the scanner to prevent multiple detections
-        controller.stop();
+              if(mounted){// Show a dialog with the scanned result
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    contentTextStyle: TextStyle(color:primaryColor),
+                    contentPadding: EdgeInsets.only(top: 90.h),
+                    backgroundColor:Colors.white,
+                    shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+                    content: Container(
+                      height: 300.h,
+                      width: 250.w,
+                      child: Column(
+                        spacing: 30.h,
+                        children: [
+                          CircularProgressIndicator( color: primaryColor,),
+                          Text("Recieving Rewards"),
+                        ],
+                      )),
+                      ),
+                    );  
+                }
 
-        // Show a dialog with the scanned result
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor:Color.fromARGB(255, 27, 75, 61) ,
-            title: const Text('QR Code Found'),
-            content: Text(value),
-            actions: [
-              TextButton(
-                onPressed: () {
+              try {
+                await DatabaseService(user: AuthenticationService.currentUser).uploadData(datamap['bottles'], datamap['points'], action, datamap["date"], null, null, null);
+                await DatabaseService().updateStatusQr(value);
+                controller.stop();
+              } catch (e) {
+                print("ERROr $e");
+              } finally{
+                if(mounted){
                   Navigator.of(context).pop();
-                  controller.start(); // Restart scanner after closing dialog
-                },
-                child: const Text('Scan Again'),
-              ),
-            ],
-          ),
-        );
-
-        break; // Handle only the first barcode
+                  showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    contentTextStyle: TextStyle(color: primaryColor, fontSize: 40.sp),
+                    titleTextStyle: TextStyle(color: primaryColor, fontSize: 60.sp, fontWeight: FontWeight.bold),
+                    contentPadding: EdgeInsets.only(top: 90.h),
+                    backgroundColor:Colors.white ,
+                    shape: ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+                    title: Center( child : Text("Awesome job!")),
+                    content: Container(
+                      height: 300.h,
+                      width: 250.w,
+                      child: Column(
+                        spacing: 30.h,
+                        children: [
+                          Text("You have earned ${datamap['points']} Points and recyled ${datamap['bottles']} Bottles", textAlign: TextAlign.center,),
+                          Text("Keep up the great work!", textAlign: TextAlign.center,)
+                        ],
+                      )),
+                      actions: [
+                        TextButton(onPressed: (){
+                            Navigator.of(context).pop();
+                            controller.start();
+                  
+                        }, 
+                        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(primaryColor)),
+                        child: Text("Confirm", style: TextStyle(color: Colors.white)))
+                      ],
+                  ),
+                  
+                );   
+              }
+            }
+          break;  // Handle only the first barcode
+          
+        }
       }
+      } catch(jsonError){
+        break;
+      }
+  
     }
   }
+
 
   @override
   void dispose() {

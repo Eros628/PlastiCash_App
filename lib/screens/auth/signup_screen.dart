@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
+import 'package:flutter_finalprojects/services/authentication_service.dart';
 import '../startup_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

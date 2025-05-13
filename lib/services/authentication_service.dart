@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/database.dart';
+import 'package:flutter_finalprojects/services/database.dart';
 import 'package:flutter_finalprojects/screens/home/home_screen.dart';
 
 class AuthenticationService {
@@ -76,6 +76,7 @@ class AuthenticationService {
 
     return result == true;
   }
+
 
   Future<void> updateEmailWithConfirmation(BuildContext context, String newEmail) async {
     final user = FirebaseAuth.instance.currentUser;

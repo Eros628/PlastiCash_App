@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_finalprojects/database.dart';
-import 'package:flutter_finalprojects/screens/auth/authentication_service.dart';
+import 'package:flutter_finalprojects/services/database.dart';
+import 'package:flutter_finalprojects/services/authentication_service.dart';
 import 'package:flutter_finalprojects/screens/home/map_screen.dart';
 import 'package:flutter_finalprojects/screens/home/reward_screen.dart';
 import 'package:flutter_finalprojects/screens/home/profile_screen.dart';
@@ -393,8 +392,8 @@ class _MilestoneSectionState extends State<MilestoneSection> {
           ),
         Padding(
           padding: EdgeInsets.only(left: 50.w, right: 50.w),
-          child:StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: DatabaseService().getTasks,
+          child:StreamBuilder<Map<String, QuerySnapshot<Map<String, dynamic>>>>(
+            stream: DatabaseService(user: AuthenticationService.currentUser).getTasks,
             builder: (context, snapshot) {
                if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
@@ -404,17 +403,15 @@ class _MilestoneSectionState extends State<MilestoneSection> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                if (!snapshot.hasData || snapshot.data!['tasks']!.docs.isEmpty) {
                   return Center(child: Text('No tasks found.'));
                 }
 
                 List<QueryDocumentSnapshot<Map<String, dynamic>>> sortedDocs =
-                  List.from(snapshot.data!.docs);
-                sortedDocs.sort((a, b) {
-                  double progressA = (a.data()["Progress"] ?? 0).toDouble();
-                  double progressB = (b.data()["Progress"] ?? 0).toDouble();
-                  return progressB.compareTo(progressA); // descending order
-                });
+                  List.from(snapshot.data!['tasks']!.docs);
+                List<QueryDocumentSnapshot<Map<String, dynamic>>> progressDocs =
+                  List.from(snapshot.data!['progress']!.docs);
+                
               return ListView.builder(
                 padding: EdgeInsets.only(top: 0),
                 shrinkWrap: true,
@@ -422,15 +419,18 @@ class _MilestoneSectionState extends State<MilestoneSection> {
                 itemCount: 2,
                 itemBuilder: (context, index) {
                   var data = sortedDocs[index].data();
+                  var progress = progressDocs[index].data();
                   return ChallengesCard(
+                    taskid: progressDocs[index].id,
                     text: data["Goal_Description"],
-                    progress: (data["Progress"] as num).toDouble() ,
+                    progress: (progress['progress']).toDouble(),
                     points: data["Points"],
                     onClaim: () {
                       setState(() {});
                     },
                     index: index,
-                    color: Colors.green);
+                    color: progress['status'] == "Active"? Colors.green : Colors.grey,
+                    status: progress['status']);
               });
             }
           ),

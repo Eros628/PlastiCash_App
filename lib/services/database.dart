@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:rxdart/rxdart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -9,6 +9,8 @@ class DatabaseService {
   
   final CollectionReference firestore = FirebaseFirestore.instance.collection("users");
   final CollectionReference<Map<String, dynamic>> firestoreTask = FirebaseFirestore.instance.collection("tasks");
+  final CollectionReference<Map<String, dynamic>> userProgress = FirebaseFirestore.instance.collection("user_progress_task");
+  final CollectionReference<Map<String, dynamic>> qrCode = FirebaseFirestore.instance.collection("qrCode");
 
   int totalBottles = 0;
   int totalPoints = 0;
@@ -26,6 +28,24 @@ class DatabaseService {
           "Points": 0,
         });
 
+        final task = await firestoreTask.get();
+        
+        await userProgress.doc(user!.uid).set(
+          {
+            "userId":user!.uid,
+            
+          },
+          
+        );
+        
+        for (var doc in task.docs){
+          await userProgress.doc(user!.uid).collection("task").doc(doc.id).set({
+            "progress":0,
+            "status": "Inactive",
+          },
+        );
+        }
+      
     } catch (e) {
       print(e);
     }
@@ -147,8 +167,41 @@ class DatabaseService {
     return totalBottle;
   }
 
+  Future<void > updateTask(String status, String taskid) async{
+    userProgress.doc(user!.uid).collection('task').doc(taskid).set({
+      "status": status
+    },
+      SetOptions(merge: true)
+    );
+  }
 
-  Future<void> uploadData(int? bottles, int points, String action, String description,
+  Future<bool>isNoActive()async{
+     int count = 0;
+     final active = await userProgress.doc(user!.uid).collection('task').get();
+     List<Map<String, dynamic>> taskList = active.docs.map((doc) {
+        return doc.data();
+      }).toList();
+     for(var doc in taskList){
+          if(doc['status'] == "Active"){
+            count++;
+          }
+     }
+
+     if(count >=1){
+      return false;
+     }
+     else{
+      return true;
+     }
+  }
+
+  Future<void> updateStatusQr(String datajson)async {
+    await qrCode.doc(datajson).set({
+      'status': "Recieved"
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> uploadData(int? bottles, int points, String action,  String date, String? description,
     String? taskId, String? transactionId) async {
     try {
 
@@ -159,11 +212,19 @@ class DatabaseService {
           "Bottles": bottles,
           "Action": action,
           "Points": points,
-          "Date": FieldValue.serverTimestamp(),
+          "Date": DateTime.parse(date),
         });
 
+        final taskActive = userProgress.doc(user!.uid).collection('task').where('status', isEqualTo: "Active").get();
+
+        print(taskActive);
+
+
+
+
       
-      } else if (action == "Redeem") {
+      } 
+      else if (action == "Redeem") {
         totalPoints -= points;
         await firestore.doc(user!.uid).collection("Activity").add({
           "Action": action,
@@ -199,9 +260,22 @@ class DatabaseService {
     return  firestore.doc(user?.uid).collection("Activity").snapshots();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> get getTasks {
-    return firestoreTask.snapshots();
-  }
+  Stream<Map<String, QuerySnapshot<Map<String, dynamic>>>> get getTasks {
+  final getTask = firestoreTask.snapshots();
+  final progress = userProgress.doc(user!.uid).collection("task").snapshots();
+
+  return Rx.combineLatest2(
+    getTask,
+    progress,
+    (QuerySnapshot<Map<String, dynamic>> taskSnap, 
+     QuerySnapshot<Map<String, dynamic>> progressSnap) {
+      return {
+        'tasks': taskSnap,
+        'progress': progressSnap,
+      };
+    },
+  );
+}
 
 
 

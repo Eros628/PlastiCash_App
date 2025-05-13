@@ -38,7 +38,7 @@ class PlastiCashApp extends StatelessWidget{
             case '/startup':
               return PageRouteBuilder(
                   transitionDuration: Duration(milliseconds: 800),
-                  reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
+                  reverseTransitionDuration: Duration(milliseconds: 800),
                   pageBuilder: (context, animation, secondaryAnimation) => StreamBuilder(stream: FirebaseAuth.instance.authStateChanges() , builder: (context, snapshot){
                     if(snapshot.connectionState == ConnectionState.waiting){
                       return const Center(
@@ -65,7 +65,7 @@ class PlastiCashApp extends StatelessWidget{
             case '/loginstart':
               return PageRouteBuilder(
                   transitionDuration: Duration(milliseconds: 800),
-                  reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
+                  reverseTransitionDuration: Duration(milliseconds: 800), 
                   pageBuilder: (context, animation, secondaryAnimation) => LoginStart(),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     final curvedAnimation = CurvedAnimation(
@@ -83,7 +83,7 @@ class PlastiCashApp extends StatelessWidget{
             case '/login':
               return PageRouteBuilder(
                 transitionDuration: Duration(milliseconds: 800),
-                reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
+                reverseTransitionDuration: Duration(milliseconds: 800), 
                 pageBuilder: (context, animation, secondaryAnimation) => LoginScreen(),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                   final curvedAnimation = CurvedAnimation(
@@ -101,7 +101,7 @@ class PlastiCashApp extends StatelessWidget{
             case '/signup':
               return PageRouteBuilder(
                   transitionDuration: Duration(milliseconds: 800),
-                  reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
+                  reverseTransitionDuration: Duration(milliseconds: 800), 
                   pageBuilder: (context, animation, secondaryAnimation) => SignupScreen(),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     final curvedAnimation = CurvedAnimation(
@@ -119,7 +119,7 @@ class PlastiCashApp extends StatelessWidget{
             case '/home':
               return PageRouteBuilder(
                   transitionDuration: Duration(milliseconds: 800),
-                  reverseTransitionDuration: Duration(milliseconds: 800), // <-- Add this line!
+                  reverseTransitionDuration: Duration(milliseconds: 800), 
                   pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     final curvedAnimation = CurvedAnimation(

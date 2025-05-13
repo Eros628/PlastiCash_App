@@ -16,7 +16,7 @@ class StartupScreen extends StatelessWidget {
                   alignment: Alignment.topLeft,
                   child: Container(height: 130,width: 120,decoration: BoxDecoration(color: Color.fromARGB(143, 27, 75, 61), borderRadius:BorderRadius.only(bottomRight: Radius.circular(200), bottomLeft: Radius.circular(10)) ),),
                 ),
-          Container(height: 80,width: 180,decoration: BoxDecoration(color: Color.fromARGB(143, 27, 75, 61), borderRadius:BorderRadius.only(bottomRight: Radius.circular(200), bottomLeft: Radius.circular(200)), ),),
+          Container(height: 80.h ,width: 180,decoration: BoxDecoration(color: Color.fromARGB(143, 27, 75, 61), borderRadius:BorderRadius.only(bottomRight: Radius.circular(200), bottomLeft: Radius.circular(200)), ),),
           Center(
           child: Column(
             spacing: 50.h,
