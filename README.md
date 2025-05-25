@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # PlastiCash User App
 
 PlastiCash is a smart recycling solution that rewards users for recycling plastic bottles using IoT-enabled vending machines. This mobile app allows users to monitor their recycling activity, earn points, and redeem those points as real cash through e-wallet services like GCash. It also features interactive challenges, a QR scanner to link with machines, and a map to find the nearest recycling stations.
@@ -25,6 +24,7 @@ PlastiCash is a smart recycling solution that rewards users for recycling plasti
 * Cloud Firestore
 
 # Dependencies
+```yaml
 dependencies:
   flutter:
     sdk: flutter
@@ -35,6 +35,7 @@ dependencies:
   flutter_map: ^latest
   geolocator: ^latest
   http: ^latest
+```
 
 # How it works
 1. User scans the machine’s QR code using the app.
