@@ -1,20 +1,54 @@
 <<<<<<< HEAD
-# flutter_finalproject
+# PlastiCash User App
 
-A new Flutter project.
+PlastiCash is a smart recycling solution that rewards users for recycling plastic bottles using IoT-enabled vending machines. This mobile app allows users to monitor their recycling activity, earn points, and redeem those points as real cash through e-wallet services like GCash. It also features interactive challenges, a QR scanner to link with machines, and a map to find the nearest recycling stations.
 
-## Getting Started
+# Features
 
-This project is a starting point for a Flutter application.
+* User Authentication
+  * Sign up and log in via Firebase Authentication
+* Recycling Activity Tracking
+  * Automatically track bottle deposits linked to the user’s account
+* Rewards & Redemption
+  * Points system based on activity
+  * Redeem points for real money (via GCash integration)
+* QR Code Scanning
+  * Scan the qr code that generated in the machine to recieve the rewards
+* Challenges System
+  * Weekly/monthly goals to keep users motivated
+* Machine Locator
+  * Displays nearby PlastiCash machines
 
-A few resources to get you started if this is your first Flutter project:
+# Technologies
+* Flutter
+* Firebase Authentication
+* Cloud Firestore
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+# Dependencies
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^latest
+  firebase_auth: ^latest
+  cloud_firestore: ^latest
+  mobile_scanner: ^latest
+  flutter_map: ^latest
+  geolocator: ^latest
+  http: ^latest
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# PlastiCash_App
->>>>>>> 324b1981b69f4e593d6a6a88a2389dbb7a664579
+# How it works
+1. User scans the machine’s QR code using the app.
+2. The machine and app connect through Firebase and ESP32 (WiFi).
+3. When bottles are inserted, the machine sends data to the cloud.
+4. The app receives real-time updates and awards points accordingly.
+5. Points can be redeemed once a minimum is reached.
+
+#  Related Repositories
+* Machine Interface App (controls the vending machine itself):
+  * https://github.com/Eros628/machine_interface_platicash.git
+
+This is a group project. I was responsible for:
+* Full-stack development of both apps using Flutter and Firebase
+* Real-time integration with Arduino via ESP32 WiFi
+* UI/UX implementation and user workflow design
+* Connecting the IoT hardware to the Firebase backend
